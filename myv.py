@@ -102,6 +102,7 @@ def readADataEntry(lines, kLine):
 
 ################################################
 def doPlot():
+    print('in doPlot')
 
     plt.cla()
     plt.ion()
@@ -110,10 +111,12 @@ def doPlot():
     for c in p.plotList:
         plt.plot(c.x, c.y, 'o-', color=c.color)
 
-    plt.ylabel(p.ylabel)
+    print('doPlot, ylabel = ', p.ylabel)
         
-    if len(p.plotList) == 1:
+    if len(p.plotList) == 1 and p.ylabel == '':
         plt.ylabel(p.plotList[0].name)
+    else:
+        plt.ylabel(p.ylabel)
 
     if p.xlabel == '':
         tryXlabel = p.plotList[0].xlabel
@@ -233,24 +236,27 @@ def do_p():
 #-----------------------------------------------
 
 def do_menu(line=None):
-    print(f'{curves=}')
+    print(f'menu {curves=}')
     for i,c in enumerate(curves):
         print(i, c.name) 
 #-----------------------------------------------
 
 def do_xlabel(line=None):
-    print(f'{line=}')
+    print(f'xlabel {line=}')
     p.xlabel = line
+    doPlot()
 #-----------------------------------------------
 
 def do_ylabel(line=None):
-    print(f'{line=}')
+    print(f'ylabel {line=}')
     p.ylabel = line
+    doPlot()
 #-----------------------------------------------
 
 def do_title(line=None):
-    print(f'{line=}')
+    print(f'title {line=}')
     p.title = line
+    doPlot()
 #-----------------------------------------------
 
 def do_cur(line=None):
@@ -259,6 +265,7 @@ def do_cur(line=None):
         print(f'{w=}')
         p.plotList.append(curves[int(w)])
         curves[int(w)].plot = True
+    doPlot()
 #-----------------------------------------------
 # alias for cur
 def do_c(line=None):
@@ -273,6 +280,7 @@ def do_mcur(line=None):
             print(f'mcur {offset=}')
             p.plotList.append(curves[offset+int(w)])
             curves[offset+int(w)].plot = True
+    do_p()
 #-----------------------------------------------
 
 def do_ls(line=None):
@@ -288,10 +296,8 @@ def do_del(line=None):
     for n in nums:
         print(f'{n=}')
         p.plotList.pop(n)
+    doPlot()
 ################################################
-
-curves, fileIndex = getCurves()
-p = Plot()
 
 def commandLoop():
 
@@ -305,12 +311,18 @@ def commandLoop():
         else:
             st += '()'
 
-        eval(st)  # leave unprotected so we can see errors while developing
+        # eval(st)  # leave unprotected so we can see errors while developing
         try:
-            pass
-            # eval(st)
+            # pass
+            eval(st)
         except NameError:
             print('error, no such command, "%s"' % st, flush=True)
 
     print('out of the while loop', flush = True)
     
+################################################
+
+# this is what gets executed when this file is imported
+curves, fileIndex = getCurves()
+p = Plot()
+
