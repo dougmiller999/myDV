@@ -1,0 +1,91 @@
+NEEDED FEATURES LIST (this is always on top)
+
+[ ] read multiple files, allow 'cur 3, b.3, c.3', syntax
+[ ] change font size for labels, title axes numbers
+[ ] give the command line editor and history functions
+[ ] a - b operator
+[ ] a + b operator
+[ ] a/b operator
+[ ] ylogscale
+[ ] xlogscale
+[ ] newcurve: generates new curve from python syntax, e.g. 'nc a.x**2 + 3*a.x'
+[ ] L2 norm
+[ ] fit command: 'fit a 1 logy xmin xmax'
+[ ] menu command takes wildcards
+[ ] cur command takes menu output: 'cur(menu foo*)'
+[ ] specify position and size of initial plot window
+[ ] read .myvrc file for initialization settings
+[-] read commands from a file: sort of; a here-doc, 'myv << EOF' works
+[03/11/2024] read multiple files, allow 'mcur 3', meaning 'cur a.3, b.3, c.3' syntax
+[03/11/2024] read multiple files
+[03/05/2024] made a Plot class that holds title, labels, annotations, plotList
+[03/05/2024] title command works
+[03/05/2024] xlabel command works
+[03/05/2024] ylabel command works
+[03/04/2024] plot screen should stay up all the time, no need for 'p' command
+
+--SUN March 3, 2024
+
+Starting git repo.  Already have the following functions working:
+label, q, p (plot), menu, cur, ls, del.  
+
+These don't all quite work right yet, though.  "Menu", for example, does not 
+take wildcards, it just lists every curve.  And the 'plot' command is 
+necessary to bring the window back each time.  
+
+Added ylabel command tonight.  Added title but it isn't persistent.
+
+--MON March  4, 2024
+
+Wait, the ylabel is not persistent either!  Ok, clearly we need a Plot
+class to hold all the stuff and settings we want for the plotted
+image.
+
+Experimenting with how to make the plot command non-blocking.
+Trying 'plt.ion', for "interactive on".  Ok this works.
+
+    plt.cla()
+    plt.ion()
+    plt.show()
+    
+    for c in plotList:
+        plt.plot(c.x, c.y, 'o-', color=c.color)
+
+    plt.legend([c.label for c in plotList])
+    plt.grid(visible=True)
+    plt.draw()
+
+But it makes clear the ylabel and title and color choices are all
+transient and the next plot they go away.  We gotta make the Plot
+class to hold the state so we can reproduce it when we want.
+
+--TUE March  5, 2024
+
+Made the Plot class, installed it, tested existing functions. Works
+great!  Now title, x/y labels are permanent, not disappearing with
+each plot command.
+
+Using a "here document" works pretty well for feeding command to myv
+from a file.  Not perfect but it'll do for now.
+
+Multiple files.  Hmmm.  Could do multiple File objects, which hold
+curves.  Or, just all the curves together, but then how do we do
+a.3, b.3, etc?  A fileIndex list that points to the first curve for
+each file would do it.
+fileIndexList = [ (0, 'file1'), (N, 'file2'), (N+M, 'file1') ]
+then a.4, b.4, c.5 becomes curves[4], curves[N+4], curves[N+M+5],
+which is pretty easy.  Want to modify ls command to give file info,
+too, so we can keep them straight.
+
+Trying to add fileIndex variable but it is broken!
+
+--MON March 11, 2024
+
+Added multi-file support and 'mcur', or 'multiple curve' command which
+plots every curve with the same number from all files that have been
+read in.
+
+--TUE March 19, 2024
+
+Fixed a bug where reading lots of curves in would cause the color 
+index to overflow the length of the predetermined color array.
