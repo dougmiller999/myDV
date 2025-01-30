@@ -236,19 +236,19 @@ def do_p():
 #-----------------------------------------------
 
 def do_menu(line=None):
-    print(f'menu {curves=}')
+    # print(f'menu {curves=}')
     for i,c in enumerate(curves):
         print(i, c.name) 
 #-----------------------------------------------
 
 def do_xlabel(line=None):
-    print(f'xlabel {line=}')
+    # print(f'xlabel {line=}')
     p.xlabel = line
     doPlot()
 #-----------------------------------------------
 
 def do_ylabel(line=None):
-    print(f'ylabel {line=}')
+    # print(f'ylabel {line=}')
     p.ylabel = line
     doPlot()
 #-----------------------------------------------
@@ -260,9 +260,9 @@ def do_title(line=None):
 #-----------------------------------------------
 
 def do_cur(line=None):
-    print(f'{line=}')
+    # print(f'{line=}')
     for w in line.split():
-        print(f'{w=}')
+        # print(f'{w=}')
         p.plotList.append(curves[int(w)])
         curves[int(w)].plot = True
     doPlot()
@@ -284,13 +284,13 @@ def do_mcur(line=None):
 #-----------------------------------------------
 
 def do_ls(line=None):
-    print(f'{line=}')
+    # print(f'{line=}')
     for i,c in enumerate(p.plotList):
         print( i, c.name, c.fileName)
 #-----------------------------------------------
         
 def do_del(line=None):
-    print(f'{line=}')
+    # print(f'{line=}')
     nums = [int(w) for w in line.split()]
     nums.reverse()
     for n in nums:
