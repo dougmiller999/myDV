@@ -2,7 +2,7 @@ import sys
 import numpy as np
 
 import matplotlib
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 from matplotlib import pyplot as plt
 
 ################################################
@@ -169,7 +169,7 @@ def getCurves():
         kLine = 0
         thereAreHeaderLinesLeft = False
         while kLine < len(lines):
-            if lines[kLine][0] == '#':
+            if lines[kLine].strip()[0] == '#':
                 thereAreHeaderLinesLeft = True
                 break
             else:
