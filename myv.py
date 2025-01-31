@@ -11,17 +11,19 @@ class Curve():
     colorIndex = 0
 
     def __init__(self, name=None, x = None, y = None, plot = False,
-                 label = None, xlabel = None, fileName = None):
+                 label = None, xlabel = None, fileName = None,
+                 identifier = None):
         self.name = name
         self.x = x
         self.y = y
         self.plot = plot
-        self.style = 'o-'
+        self.style = 'o-'  # line style the curve will be plotted with
         self.color = Curve.colors[Curve.colorIndex]
         Curve.colorIndex = (Curve.colorIndex  + 1) % len(Curve.colors)
-        self.label = label
-        self.xlabel = xlabel
-        self.fileName = fileName
+        self.label = label  # this get printed in plot legend
+        self.identifier = identifier # this is the 'A,B,etc' label by which the user will refer to the curve
+        self.xlabel = xlabel  # what goes at the bottom of the plot
+        self.fileName = fileName  # file the curve came from 
 
 ################################################
 class Plot():
@@ -31,6 +33,9 @@ class Plot():
         self.ylabel = ylabel
         self.annotations = annotations
         self.plotList = []
+        # initialize curve identifiers as [a-z]+[A-Z]
+        self.curveIdentifiers = [chr(a) for a in range(97,123)] + [chr(a) for a in range(65,91)]
+        self.currentCurveIdentifierIndex = 0 # first one is 'a'
         
 ################################################
 def readADataEntry(lines, kLine):
@@ -129,7 +134,7 @@ def doPlot():
     else:
         plt.xlabel(p.xlabel)
     
-    plt.legend([c.label for c in p.plotList])
+    plt.legend([c.identifier + ' - ' + c.label for c in p.plotList])
     plt.title(p.title)
     plt.grid(visible=True)
     plt.draw()
@@ -264,7 +269,14 @@ def do_cur(line=None):
     for w in line.split():
         # print(f'{w=}')
         p.plotList.append(curves[int(w)])
-        curves[int(w)].plot = True
+        c = curves[int(w)]
+        c.plot = True
+        # cid will be the 'A,B,etc' label by which the user will refer to the curve
+        cid = p.curveIdentifiers[p.currentCurveIdentifierIndex]
+        p.currentCurveIdentifierIndex += 1  # get ready for the next curve
+        if p.currentCurveIdentifierIndex > 51:
+            raise RuntimeError('tried to plot too many curves, out of identifiers')
+        c.identifier = cid
     doPlot()
 #-----------------------------------------------
 # alias for cur
@@ -286,17 +298,21 @@ def do_mcur(line=None):
 def do_ls(line=None):
     # print(f'{line=}')
     for i,c in enumerate(p.plotList):
-        print( i, c.name, c.fileName)
+        print( c.identifier, c.name, c.fileName)
 #-----------------------------------------------
         
 def do_del(line=None):
     # print(f'{line=}')
-    nums = [int(w) for w in line.split()]
-    nums.reverse()
-    for n in nums:
-        print(f'{n=}')
-        p.plotList.pop(n)
+    cids = line.split()
+    for cid in cids:
+        for i,c in enumerate(p.plotList):
+            if cid == c.identifier:
+                p.plotList.pop(i)
     doPlot()
+#-----------------------------------------------
+# alias for del
+def do_d(line=None):
+    do_del(line)
 ################################################
 
 def commandLoop():
