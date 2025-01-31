@@ -5,6 +5,7 @@ NEEDED FEATURES LIST (this is always on top)
 [ ] a - b operator
 [ ] a + b operator
 [ ] a/b operator
+[ ] mx a .2 operation, divx a .2 operation
 [ ] ylogscale
 [ ] xlogscale
 [ ] hide/show chosen curves but keep them in plotlist
