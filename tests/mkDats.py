@@ -2,7 +2,6 @@
 # FRI January 31, 2025
 
 import numpy as np
-import random as rnd
 import sys
 
 if len(sys.argv) > 1:

@@ -1,13 +1,12 @@
 NEEDED FEATURES LIST (this is always on top)
 
-[ ] read multiple files, allow 'cur 3, b.3, c.3', syntax
-[ ] change font size for labels, title axes numbers
 [ ] a - b operator
-[ ] a + b operator
 [ ] a/b operator
-[ ] mx a .2 operation, divx a .2 operation
 [ ] ylogscale
 [ ] xlogscale
+[ ] derivative 
+[ ] integral
+[ ] change font size for labels, title axes numbers
 [ ] hide/show chosen curves but keep them in plotlist
 [ ] newcurve: generates new curve from python syntax, e.g. 'nc a.x**2 + 3*a.x'
 [ ] L2 norm
@@ -18,6 +17,12 @@ NEEDED FEATURES LIST (this is always on top)
 [ ] specify position and size of initial plot window
 [ ] read .myvrc file for initialization settings
 [-] read commands from a file: sort of; a here-doc, 'myv << EOF' works
+[ ] read multiple files, allow 'cur 3, b.3, c.3', syntax
+[01/31/2025] a + b operator works as 'add a b' command
+[01/31/2025] adding utility commands like getCurveFromId, addCurveToPlot
+[01/31/2025] mx, my commands work
+[01/31/2025] color command works
+[01/31/2025] line styles commands work
 [01/31/2025] added a-zA-Z labeling for displayed curves
 [03/11/2024] read multiple files, allow 'mcur 3', meaning 'cur a.3, b.3, c.3' syntax
 [03/11/2024] read multiple files
@@ -99,3 +104,6 @@ Added the 'a-zA-Z' labeling for the curves shown on the plot.  It's
 not perfect, it doesn't re-use labels yet, just plows through the
 list of identifiers, but the extension to full usability will be easy.
 
+Added mx, my, for modifying data scales.  Added line styles.  Added
+'color' command so we can change colors willy nilly.  Added erase
+command.  This starting to feel like the real thing.  
