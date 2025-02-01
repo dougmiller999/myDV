@@ -1,5 +1,6 @@
 import sys
 import numpy as np
+import copy
 
 import matplotlib
 # matplotlib.use('TkAgg')
@@ -124,13 +125,14 @@ def doPlot():
         plt.ylabel(p.ylabel)
 
     if p.xlabel == '':
-        tryXlabel = p.plotList[0].xlabel
-        canDoXLabel = True
-        for c in p.plotList:
-            if c.xlabel != tryXlabel:
-                canDoXLabel = False
-        if canDoXLabel == True:
-            plt.xlabel(tryXlabel)
+        if len(p.plotList) > 0:
+            tryXlabel = p.plotList[0].xlabel
+            canDoXLabel = True
+            for c in p.plotList:
+                if c.xlabel != tryXlabel:
+                    canDoXLabel = False
+            if canDoXLabel == True:
+                plt.xlabel(tryXlabel)
     else:
         plt.xlabel(p.xlabel)
     
@@ -268,8 +270,9 @@ def do_cur(line=None):
     # print(f'{line=}')
     for w in line.split():
         # print(f'{w=}')
-        p.plotList.append(curves[int(w)])
-        c = curves[int(w)]
+        c = copy.deepcopy(curves[int(w)])
+        p.plotList.append(c)
+        # p.plotList.append(curves[int(w)])
         c.plot = True
         # cid will be the 'A,B,etc' label by which the user will refer to the curve
         cid = p.curveIdentifiers[p.currentCurveIdentifierIndex]
@@ -327,10 +330,10 @@ def commandLoop():
         else:
             st += '()'
 
-        # eval(st)  # leave unprotected so we can see errors while developing
+        eval(st)  # leave unprotected so we can see errors while developing
         try:
-            # pass
-            eval(st)
+            pass
+            # eval(st)
         except NameError:
             print('error, no such command, "%s"' % st, flush=True)
 
