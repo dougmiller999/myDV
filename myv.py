@@ -3,7 +3,7 @@ import numpy as np
 import copy
 
 import matplotlib
-# matplotlib.use('TkAgg')
+matplotlib.use('TkAgg')
 from matplotlib import pyplot as plt
 
 ################################################
@@ -47,6 +47,7 @@ class Plot():
                            'v' : 'v',
                            'x' : 'x',
                            'diamond' : 'D'}
+        
         
 ################################################
 def readADataEntry(lines, kLine):
@@ -125,7 +126,10 @@ def doPlot():
     plt.show()
     
     for c in p.plotList:
-        style = p.styleDict[c.style]
+        if c.style in p.styleDict.keys():
+            style = p.styleDict[c.style]
+        else:
+            style = c.style
         plt.plot(c.x, c.y, style, color=c.color)
         # plt.plot(c.x, c.y, 'o-', color=c.color)
 
@@ -236,9 +240,13 @@ def do_foo(x):
 
 def do_label(line):
     assert(len(line.split()) > 1)
-    curveIndex = int(line.split()[0])
-    c = p.plotList[curveIndex]
+    # curveIndex = int(line.split()[0])
+    curveIdentifier = line.split()[0]
+    for i,c in enumerate(p.plotList):
+        if curveIdentifier == c.identifier:
+            break
     c.label = ' '.join(line.split()[1:])
+    doPlot()
 #-----------------------------------------------
 
 def do_q():
@@ -278,20 +286,24 @@ def do_title(line=None):
     doPlot()
 #-----------------------------------------------
 
+def addCurveToPlot(c):
+    p.plotList.append(c)
+    c.plot = True
+    # assign identifier letter
+    cid = p.curveIdentifiers[p.currentCurveIdentifierIndex]
+    p.currentCurveIdentifierIndex += 1  # get ready for the next curve
+    if p.currentCurveIdentifierIndex > 51:
+        raise RuntimeError('tried to plot too many curves, out of identifiers')
+    c.identifier = cid
+    
+#-----------------------------------------------
+
 def do_cur(line=None):
     # print(f'{line=}')
     for w in line.split():
         # print(f'{w=}')
         c = copy.deepcopy(curves[int(w)])
-        p.plotList.append(c)
-        # p.plotList.append(curves[int(w)])
-        c.plot = True
-        # cid will be the 'A,B,etc' label by which the user will refer to the curve
-        cid = p.curveIdentifiers[p.currentCurveIdentifierIndex]
-        p.currentCurveIdentifierIndex += 1  # get ready for the next curve
-        if p.currentCurveIdentifierIndex > 51:
-            raise RuntimeError('tried to plot too many curves, out of identifiers')
-        c.identifier = cid
+        addCurveToPlot(c)
     doPlot()
 #-----------------------------------------------
 # alias for cur
@@ -305,12 +317,12 @@ def do_mcur(line=None):
         print(f'mcur {w=}')
         for offset, fileName in fileIndex:
             print(f'mcur {offset=}')
-            p.plotList.append(curves[offset+int(w)])
-            curves[offset+int(w)].plot = True
-    do_p()
+            c = copy.deepcopy(curves[offset+int(w)])
+            addCurveToPlot(c)
+    doPlot()
 #-----------------------------------------------
 
-def do_ls(line=None):
+def do_lst(line=None):
     # print(f'{line=}')
     for i,c in enumerate(p.plotList):
         print( c.identifier, c.name, c.fileName)
