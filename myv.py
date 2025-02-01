@@ -37,6 +37,16 @@ class Plot():
         # initialize curve identifiers as [a-z]+[A-Z]
         self.curveIdentifiers = [chr(a) for a in range(97,123)] + [chr(a) for a in range(65,91)]
         self.currentCurveIdentifierIndex = 0 # first one is 'a'
+        self.styleDict = { 'o-' : 'o-',
+                           'solid' : '-',
+                           'dashed' : '--',
+                           'dash-dot' : '-.',
+                           'dotted' : ':',
+                           'o' :  'o',
+                           '^' : '^',
+                           'v' : 'v',
+                           'x' : 'x',
+                           'diamond' : 'D'}
         
 ################################################
 def readADataEntry(lines, kLine):
@@ -115,7 +125,9 @@ def doPlot():
     plt.show()
     
     for c in p.plotList:
-        plt.plot(c.x, c.y, 'o-', color=c.color)
+        style = p.styleDict[c.style]
+        plt.plot(c.x, c.y, style, color=c.color)
+        # plt.plot(c.x, c.y, 'o-', color=c.color)
 
     print('doPlot, ylabel = ', p.ylabel)
         
@@ -316,6 +328,32 @@ def do_del(line=None):
 # alias for del
 def do_d(line=None):
     do_del(line)
+#-----------------------------------------------
+def do_era(line=None):
+    # print(f'{line=}')
+    p.plotList.clear()
+    doPlot()
+#-----------------------------------------------
+def do_color(line=None):
+    # print(f'{line=}')
+    cids = line.split()[:-1]
+    color = line.split()[-1]
+    for cid in cids:
+        for i,c in enumerate(p.plotList):
+            if cid == c.identifier:
+                c.color = color
+    doPlot()
+#-----------------------------------------------
+def do_ls(line=None):
+    # print(f'{line=}')
+    cids = line.split()[:-1]
+    style = line.split()[-1]
+    for cid in cids:
+        for i,c in enumerate(p.plotList):
+            if cid == c.identifier:
+                c.style = style # will get converted at plot time
+    doPlot()
+#-----------------------------------------------
 ################################################
 
 def commandLoop():
