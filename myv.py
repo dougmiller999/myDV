@@ -48,6 +48,11 @@ class Plot():
                            'x' : 'x',
                            'diamond' : 'D'}
         
+    def getNextIdentifier(self):
+        index = self.currentCurveIdentifierIndex
+        ident = self.curveIdentifiers[index]
+        self.currentCurveIdentifierIndex += 1
+        return ident
         
 ################################################
 def readADataEntry(lines, kLine):
@@ -285,6 +290,13 @@ def do_title(line=None):
     p.title = line
     doPlot()
 #-----------------------------------------------
+def getCurveFromIdentifier(curveIdentifier):
+    for c in p.plotList:
+        if curveIdentifier == c.identifier:
+            break
+    return c 
+
+#-----------------------------------------------
 
 def addCurveToPlot(c):
     p.plotList.append(c)
@@ -344,6 +356,8 @@ def do_d(line=None):
 def do_era(line=None):
     # print(f'{line=}')
     p.plotList.clear()
+    p.currentCurveIdentifierIndex = 0
+
     doPlot()
 #-----------------------------------------------
 def do_color(line=None):
@@ -364,6 +378,38 @@ def do_ls(line=None):
         for i,c in enumerate(p.plotList):
             if cid == c.identifier:
                 c.style = style # will get converted at plot time
+    doPlot()
+#-----------------------------------------------
+def do_add(line=None):
+    # print(f'{line=}')
+    c1 = getCurveFromIdentifier(line[0])
+    c2 = getCurveFromIdentifier(line[1])
+    ident = p.getNextIdentifier()
+    cnew = Curve(name=c1.identifier+'+'+c2.identifier,
+                 x = c1.x, y = c1.y+c2.y, plot = True,
+                 label = c1.identifier+'+'+c2.identifier,
+                 xlabel = None, fileName = None,
+                 identifier = ident)
+    addCurveToPlot(cnew)
+
+    doPlot()
+#-----------------------------------------------
+def do_mx(line=None):
+    #('') print(f'{line=}')
+    line_args = line.split()
+    mFactor = float(line_args[-1])
+    for cid in line_args[:-1]:
+        c = getCurveFromIdentifier(cid)
+        c.x = mFactor*c.x
+    doPlot()
+#-----------------------------------------------
+def do_my(line=None):
+    # print(f'{line=}')
+    line_args = line.split()
+    mFactor = float(line_args[-1])
+    for cid in line_args[:-1]:
+        c = getCurveFromIdentifier(cid)
+        c.y = mFactor*c.y
     doPlot()
 #-----------------------------------------------
 ################################################

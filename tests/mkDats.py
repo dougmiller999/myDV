@@ -26,7 +26,7 @@ y = []
 
 for a,func in zip(A,funclist):
     x = np.linspace(0,4.0)
-    y.append( func(x) + a*rnd.random() )
+    y.append( func(x) + a*np.random.random(len(x)) )
 
 f = open(filename, 'w')
 
