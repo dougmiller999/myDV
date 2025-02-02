@@ -136,9 +136,8 @@ def doPlot():
         else:
             style = c.style
         plt.plot(c.x, c.y, style, color=c.color)
-        # plt.plot(c.x, c.y, 'o-', color=c.color)
 
-    print('doPlot, ylabel = ', p.ylabel)
+    # print('doPlot, ylabel = ', p.ylabel)
         
     if len(p.plotList) == 1 and p.ylabel == '':
         plt.ylabel(p.plotList[0].name)
@@ -380,19 +379,37 @@ def do_ls(line=None):
                 c.style = style # will get converted at plot time
     doPlot()
 #-----------------------------------------------
-def do_add(line=None):
-    # print(f'{line=}')
-    c1 = getCurveFromIdentifier(line[0])
-    c2 = getCurveFromIdentifier(line[1])
-    ident = p.getNextIdentifier()
-    cnew = Curve(name=c1.identifier+'+'+c2.identifier,
-                 x = c1.x, y = c1.y+c2.y, plot = True,
-                 label = c1.identifier+'+'+c2.identifier,
-                 xlabel = None, fileName = None,
-                 identifier = ident)
-    addCurveToPlot(cnew)
+def doAopB(op,line=None):
+    '''op is a char var that is the operation being done,
+    like '+' for addition'''
+    line_args = line.split()
+    c1 = getCurveFromIdentifier(line_args[0])
+    c2 = getCurveFromIdentifier(line_args[1])
+    y = eval('c1.y' + op + 'c2.y')  # actually do the operation here
+    cnew = Curve(name=c1.identifier+op+c2.identifier,
+                 x = c1.x, y = y, plot = True,
+                 label = c1.identifier+op+c2.identifier,
+                 xlabel = None, fileName = None)
+    addCurveToPlot(cnew) # will add identifier for us
 
     doPlot()
+    
+#-----------------------------------------------
+def do_add(line=None):
+    # print(f'{line=}')
+    doAopB('+', line)
+#-----------------------------------------------
+def do_sub(line=None):
+    print(f'{line=}')
+    doAopB('-', line)
+#-----------------------------------------------
+def do_mul(line=None):
+    # print(f'{line=}')
+    doAopB('*', line)
+#-----------------------------------------------
+def do_div(line=None):
+    # print(f'{line=}')
+    doAopB('/', line)
 #-----------------------------------------------
 def do_mx(line=None):
     #('') print(f'{line=}')

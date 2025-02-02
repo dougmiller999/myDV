@@ -1,7 +1,5 @@
 NEEDED FEATURES LIST (this is always on top)
 
-[ ] a - b operator
-[ ] a/b operator
 [ ] ylogscale
 [ ] xlogscale
 [ ] derivative 
@@ -18,6 +16,9 @@ NEEDED FEATURES LIST (this is always on top)
 [ ] read .myvrc file for initialization settings
 [-] read commands from a file: sort of; a here-doc, 'myv << EOF' works
 [ ] read multiple files, allow 'cur 3, b.3, c.3', syntax
+[02/01/2025] a - b operator
+[02/01/2025] a/b operator
+[02/01/2025] a*b operator
 [01/31/2025] a + b operator works as 'add a b' command
 [01/31/2025] adding utility commands like getCurveFromId, addCurveToPlot
 [01/31/2025] mx, my commands work
