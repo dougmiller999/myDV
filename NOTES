@@ -1,7 +1,5 @@
 NEEDED FEATURES LIST (this is always on top)
 
-[ ] ylogscale
-[ ] xlogscale
 [ ] derivative 
 [ ] integral
 [ ] change font size for labels, title axes numbers
@@ -16,6 +14,8 @@ NEEDED FEATURES LIST (this is always on top)
 [ ] read .myvrc file for initialization settings
 [-] read commands from a file: sort of; a here-doc, 'myv << EOF' works
 [ ] read multiple files, allow 'cur 3, b.3, c.3', syntax
+[02/02/2025] ylogscale
+[02/02/2025] xlogscale
 [02/01/2025] a - b operator
 [02/01/2025] a/b operator
 [02/01/2025] a*b operator

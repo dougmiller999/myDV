@@ -24,7 +24,7 @@ class Curve():
         self.label = label  # this get printed in plot legend
         self.identifier = identifier # this is the 'A,B,etc' label by which the user will refer to the curve
         self.xlabel = xlabel  # what goes at the bottom of the plot
-        self.fileName = fileName  # file the curve came from 
+        self.fileName = fileName  # file the curve came from
 
 ################################################
 class Plot():
@@ -32,6 +32,8 @@ class Plot():
         self.title = title
         self.xlabel = xlabel
         self.ylabel = ylabel
+        self.yscale = 'linear'
+        self.xscale = 'linear'
         self.annotations = annotations
         self.plotList = []
         # initialize curve identifiers as [a-z]+[A-Z]
@@ -137,8 +139,8 @@ def doPlot():
             style = c.style
         plt.plot(c.x, c.y, style, color=c.color)
 
+    # handle axis labels
     # print('doPlot, ylabel = ', p.ylabel)
-        
     if len(p.plotList) == 1 and p.ylabel == '':
         plt.ylabel(p.plotList[0].name)
     else:
@@ -155,7 +157,10 @@ def doPlot():
                 plt.xlabel(tryXlabel)
     else:
         plt.xlabel(p.xlabel)
-    
+
+    # log scales or not
+    plt.yscale(p.yscale)
+    plt.xscale(p.xscale)
     plt.legend([c.identifier + ' - ' + c.label for c in p.plotList])
     plt.title(p.title)
     plt.grid(visible=True)
@@ -240,6 +245,20 @@ def getCurves():
 
 def do_foo(x):
     print('x = ',x)
+#-----------------------------------------------
+def do_xls(line):
+    if line.strip() == 'on':
+        p.xscale = 'log'
+    else:
+        p.xscale = 'linear'
+    doPlot()
+#-----------------------------------------------
+def do_yls(line):
+    if line.strip() == 'on':
+        p.yscale = 'log'
+    else:
+        p.yscale = 'linear'
+    doPlot()
 #-----------------------------------------------
 
 def do_label(line):
