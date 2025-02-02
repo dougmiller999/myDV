@@ -2,8 +2,12 @@ NEEDED FEATURES LIST (this is always on top)
 
 [ ] derivative 
 [ ] integral
+[ ] 'span' command
+[ ] xmin, xmax?  maybe don't need if integral takes a range.
+[ ] take a range of curves for args, e.g. 'color c:i red'
 [ ] change font size for labels, title axes numbers
-[ ] hide/show chosen curves but keep them in plotlist
+[ ] hide/show legend
+[ ] put legend ur, ul, lr, ll
 [ ] newcurve: generates new curve from python syntax, e.g. 'nc a.x**2 + 3*a.x'
 [ ] L2 norm
 [ ] fit command: 'fit a 1 logy xmin xmax'
@@ -14,6 +18,12 @@ NEEDED FEATURES LIST (this is always on top)
 [ ] read .myvrc file for initialization settings
 [-] read commands from a file: sort of; a here-doc, 'myv << EOF' works
 [ ] read multiple files, allow 'cur 3, b.3, c.3', syntax
+[02/02/2025] ran and dom commands, with "ran de" and "dom de" too
+[02/02/2025] hide/show chosen curves but keep them in plotlist
+[02/02/2025] log operator
+[02/02/2025] exp operator
+[02/02/2025] sin operator
+[02/02/2025] cos operator
 [02/02/2025] ylogscale
 [02/02/2025] xlogscale
 [02/01/2025] a - b operator
@@ -107,4 +117,23 @@ list of identifiers, but the extension to full usability will be easy.
 
 Added mx, my, for modifying data scales.  Added line styles.  Added
 'color' command so we can change colors willy nilly.  Added erase
-command.  This starting to feel like the real thing.  
+plot command.  This starting to feel like the real thing.
+
+--SAT February  1, 2025
+
+Added big four arithmetic operators, +,-,*,/, as 'add', 'sub', 'mul',
+and 'div' commands.
+
+--SUN February  2, 2025
+
+Adding functions of curves; 'log', 'log10', 'exp', 'sin',
+'cos'. Honestly, not going to bother adding more until it comes up.
+It's super easy to add a fuction, especially if it's already in numpy,
+and seriously, I am not going to do anything so weird it isn't already
+in numpy.  Probably.
+
+The more I screw with this the more the memories come back and I add
+another feature to the list.  Added 'hide/show'.  Should add 'ran' and
+'dom', but I'll have to learn about matplotlib axes some more, again.
+:-) Ok, I added 'ran' and 'dom', just had to have them!  Works pretty
+well, too.

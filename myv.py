@@ -34,6 +34,10 @@ class Plot():
         self.ylabel = ylabel
         self.yscale = 'linear'
         self.xscale = 'linear'
+        self.xmin = None
+        self.xmax = None
+        self.ymin = None
+        self.ymax = None
         self.annotations = annotations
         self.plotList = []
         # initialize curve identifiers as [a-z]+[A-Z]
@@ -131,14 +135,22 @@ def doPlot():
     plt.cla()
     plt.ion()
     plt.show()
-    
-    for c in p.plotList:
-        if c.style in p.styleDict.keys():
-            style = p.styleDict[c.style]
-        else:
-            style = c.style
-        plt.plot(c.x, c.y, style, color=c.color)
 
+    legendList = []
+    for c in p.plotList:
+        if c.plot == True: 
+            if c.style in p.styleDict.keys():
+                style = p.styleDict[c.style]
+            else:
+                style = c.style
+            plt.plot(c.x, c.y, style, color=c.color)
+            # and only the plotted curves are in legend
+            legendList.append(c.identifier + ' - ' + c.label)
+
+    # plot the legend
+    plt.legend(legendList)
+
+    
     # handle axis labels
     # print('doPlot, ylabel = ', p.ylabel)
     if len(p.plotList) == 1 and p.ylabel == '':
@@ -161,7 +173,10 @@ def doPlot():
     # log scales or not
     plt.yscale(p.yscale)
     plt.xscale(p.xscale)
-    plt.legend([c.identifier + ' - ' + c.label for c in p.plotList])
+    # limits
+    plt.xlim(p.xmin, p.xmax)
+    plt.ylim(p.ymin, p.ymax)
+    # title, turn the grid on
     plt.title(p.title)
     plt.grid(visible=True)
     plt.draw()
@@ -246,18 +261,46 @@ def getCurves():
 def do_foo(x):
     print('x = ',x)
 #-----------------------------------------------
-def do_xls(line):
-    if line.strip() == 'on':
-        p.xscale = 'log'
-    else:
-        p.xscale = 'linear'
+def do_hide(line=None):
+    if line is None: return
+    print('hide ', line)
+    c = getCurveFromIdentifier(line.strip())
+    print('hide ', c.name)
+    c.plot = False
     doPlot()
 #-----------------------------------------------
-def do_yls(line):
-    if line.strip() == 'on':
-        p.yscale = 'log'
+def do_show(line=None):
+    if line is None: return
+    print('show ', line)
+    c = getCurveFromIdentifier(line.strip())
+    print('show ', c.name)
+    c.plot = True
+    doPlot()
+#-----------------------------------------------
+def do_xls(line=None):
+    if line is not None:
+        line = line.strip()
+    if not line == 'on' and not line == 'off':
+        print('xls requires "on" or "off"')
+        return
     else:
-        p.yscale = 'linear'
+        if line == 'on':
+            p.xscale = 'log'
+        else:
+            p.xscale = 'linear'
+    doPlot()
+#-----------------------------------------------
+def do_yls(line=None):
+    if line is not None:
+        line = line.strip()
+    if not line == 'on' and not line == 'off':
+        print('yls requires "on" or "off"')
+        return
+    else:
+        if line.strip() == 'on':
+            p.yscale = 'log'
+        else:
+            p.yscale = 'linear'
     doPlot()
 #-----------------------------------------------
 
@@ -399,7 +442,7 @@ def do_ls(line=None):
     doPlot()
 #-----------------------------------------------
 def doAopB(op,line=None):
-    '''op is a char var that is the operation being done,
+    '''op is a char var that is the binary operation being done,
     like '+' for addition'''
     line_args = line.split()
     c1 = getCurveFromIdentifier(line_args[0])
@@ -413,6 +456,41 @@ def doAopB(op,line=None):
 
     doPlot()
     
+#-----------------------------------------------
+def doFunctionOfCurve(func,line=None):
+    '''func is a string var that is the operation being done,
+    like 'sin' for sine'''
+    line_args = line.split()
+    c = getCurveFromIdentifier(line_args[0]) # argument
+    y = eval('np.'+func + '(c.y)')  # actually do the operation here
+    cnew = Curve(name=func+'(c.identifier)',
+                 x = c.x, y = y, plot = True,
+                 label = func+'('+c.identifier+')',
+                 xlabel = None, fileName = None)
+    addCurveToPlot(cnew) # will add new curve identifier for us
+
+    doPlot()
+    
+#-----------------------------------------------
+def do_log(line=None):
+    # print(f'{line=}')
+    doFunctionOfCurve('log', line)
+#-----------------------------------------------
+def do_log10(line=None):
+    # print(f'{line=}')
+    doFunctionOfCurve('log10', line)
+#-----------------------------------------------
+def do_exp(line=None):
+    # print(f'{line=}')
+    doFunctionOfCurve('exp', line)
+#-----------------------------------------------
+def do_sin(line=None):
+    # print(f'{line=}')
+    doFunctionOfCurve('sin', line)
+#-----------------------------------------------
+def do_cos(line=None):
+    # print(f'{line=}')
+    doFunctionOfCurve('cos', line)
 #-----------------------------------------------
 def do_add(line=None):
     # print(f'{line=}')
@@ -447,6 +525,62 @@ def do_my(line=None):
         c = getCurveFromIdentifier(cid)
         c.y = mFactor*c.y
     doPlot()
+#-----------------------------------------------
+def doAxesMinMax(axis,line=None):
+    '''line should have two numbers in it or be the
+    string 'de', nothing else counts as good.
+    axis must be 'x' or 'y'.
+    '''
+    # asserts because user input has already been filtered
+    assert(line is not None)
+    assert(axis=='x' or axis=='y')
+    
+    line_args = line.split()
+    if len(line_args) == 1 and line_args[0] == 'de':
+        # find the new limits
+        # we have coded like it's the y axis but it could be x
+        ymin = 99e99
+        ymax = -99e99
+        for c in p.plotList:
+            values = eval('c.'+axis)  # either axis is fine
+            mx = max(values)
+            mn = min(values)
+            if mx > ymax:
+                ymax = mx
+            if mn < ymin:
+                ymin = mn
+        ymax = ymax + 0.1*(ymax-ymin)
+        ymin = ymin - 0.1*(ymax-ymin)
+    elif len(line_args) == 2:
+        ymin = float(line_args[0])
+        ymax = float(line_args[1])
+    else:
+        print('ran: args are "x/ymin x/ymax" or "de"')
+        return
+
+    # execute setting of the plot min/max
+    exec('p.'+axis+'min = ymin')
+    exec('p.'+axis+'max = ymax')
+    doPlot()
+    
+#-----------------------------------------------
+def do_ran(line=None):
+    '''line should have two numbers in it or be the
+    string 'de', nothing else counts as good'''
+    if line is None: 
+        print('ran: args are "ymin ymax" or "de"')
+        return
+    doAxesMinMax('y', line)
+    
+#-----------------------------------------------
+def do_dom(line=None):
+    '''line should have two numbers in it or be the
+    string 'de', nothing else counts as good'''
+    if line is None: 
+        print('dom: args are "xmin xmax" or "de"')
+        return
+    doAxesMinMax('x', line)
+    
 #-----------------------------------------------
 ################################################
 
