@@ -21,6 +21,7 @@ def h(x):
 funclist = [f,g,h]
 
 A = [0.5, 1.0, 0.1]
+A = [0,0,0]
 y = []
 
 for a,func in zip(A,funclist):

@@ -3,7 +3,7 @@ import numpy as np
 import copy
 
 import matplotlib
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 from matplotlib import pyplot as plt
 
 ################################################
@@ -580,7 +580,7 @@ def do_dom(line=None):
     
 #-----------------------------------------------
 
-def do_der(func,line=None):
+def do_der(line=None):
     '''return new curve that is derivative of the curve'''
     line_args = line.split()
     c = getCurveFromIdentifier(line_args[0]) # argument
