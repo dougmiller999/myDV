@@ -397,7 +397,7 @@ def do_mcur(line=None):
 
 def do_lst(line=None):
     # print(f'{line=}')
-    for i,c in enumerate(p.plotList):
+    for c in enumerate(p.plotList):
         print( c.identifier, c.name, c.fileName)
 #-----------------------------------------------
         
@@ -405,9 +405,8 @@ def do_del(line=None):
     # print(f'{line=}')
     cids = line.split()
     for cid in cids:
-        for i,c in enumerate(p.plotList):
-            if cid == c.identifier:
-                p.plotList.pop(i)
+        c = getCurveFromIdentifier(cid)
+            p.plotList.remove(c)
     doPlot()
 #-----------------------------------------------
 # alias for del
@@ -426,9 +425,8 @@ def do_color(line=None):
     cids = line.split()[:-1]
     color = line.split()[-1]
     for cid in cids:
-        for i,c in enumerate(p.plotList):
-            if cid == c.identifier:
-                c.color = color
+        c = getCurveFromIdentifier(cid)
+        c.color = color
     doPlot()
 #-----------------------------------------------
 def do_ls(line=None):
@@ -436,9 +434,8 @@ def do_ls(line=None):
     cids = line.split()[:-1]
     style = line.split()[-1]
     for cid in cids:
-        for i,c in enumerate(p.plotList):
-            if cid == c.identifier:
-                c.style = style # will get converted at plot time
+        c = getCurveFromIdentifier(cid)
+        c.style = style # will get converted at plot time
     doPlot()
 #-----------------------------------------------
 def doAopB(op,line=None):
