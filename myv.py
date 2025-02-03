@@ -406,7 +406,7 @@ def do_del(line=None):
     cids = line.split()
     for cid in cids:
         c = getCurveFromIdentifier(cid)
-            p.plotList.remove(c)
+        p.plotList.remove(c)
     doPlot()
 #-----------------------------------------------
 # alias for del
