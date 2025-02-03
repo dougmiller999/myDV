@@ -137,3 +137,7 @@ another feature to the list.  Added 'hide/show'.  Should add 'ran' and
 'dom', but I'll have to learn about matplotlib axes some more, again.
 :-) Ok, I added 'ran' and 'dom', just had to have them!  Works pretty
 well, too.
+
+--MON February 3, 2025
+
+Adding derivative function.

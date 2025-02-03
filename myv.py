@@ -579,6 +579,22 @@ def do_dom(line=None):
     doAxesMinMax('x', line)
     
 #-----------------------------------------------
+
+def do_der(func,line=None):
+    '''return new curve that is derivative of the curve'''
+    line_args = line.split()
+    c = getCurveFromIdentifier(line_args[0]) # argument
+    y = np.gradient(c.y, c.x)  # actually do the operation here
+    cnew = Curve(name='deriv(c.identifier)',
+                 x = c.x, y = y, plot = True,
+                 label = 'deriv('+c.identifier+')',
+                 xlabel = None, fileName = None)
+    addCurveToPlot(cnew) # will add new curve identifier for us
+
+    doPlot()
+    
+#-----------------------------------------------
+
 ################################################
 
 def commandLoop():
