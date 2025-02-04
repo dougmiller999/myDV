@@ -595,6 +595,29 @@ def do_der(line=None):
     
 #-----------------------------------------------
 
+def do_span(line=None):
+    '''return new curve that is y=x over user-settable range'''
+    if line is None: 
+        print('span: args are "xmin xmax", returns new curve')
+        return
+    line_args = line.split()
+    if len(line_args) != 2: 
+        print('span: args are "xmin xmax", returns new curve')
+        return
+    x0 = float(line_args[0])
+    x1 = float(line_args[1])
+    x = np.linspace(x0,x1,num=len(curves[0].x), endpoint=True)  # actually do the operation here
+    y = np.linspace(x0,x1,num=len(curves[0].x), endpoint=True)  # actually do the operation here
+    cnew = Curve(name='span',
+                 x = x, y = y, plot = True,
+                 label = 'span',
+                 xlabel = None, fileName = None)
+    addCurveToPlot(cnew) # will add new curve identifier for us
+
+    doPlot()
+    
+#-----------------------------------------------
+
 ################################################
 
 def commandLoop():

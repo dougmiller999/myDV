@@ -1,8 +1,6 @@
 NEEDED FEATURES LIST (this is always on top)
 
-[ ] derivative 
 [ ] integral
-[ ] 'span' command
 [ ] xmin, xmax?  maybe don't need if integral takes a range.
 [ ] take a range of curves for args, e.g. 'color c:i red'
 [ ] change font size for labels, title axes numbers
@@ -17,7 +15,9 @@ NEEDED FEATURES LIST (this is always on top)
 [ ] specify position and size of initial plot window
 [ ] read .myvrc file for initialization settings
 [-] read commands from a file: sort of; a here-doc, 'myv << EOF' works
-[ ] read multiple files, allow 'cur 3, b.3, c.3', syntax
+[ ] allow 'cur 3, b.3, c.3', syntax
+[02/04/2025] 'span' command
+[02/03/2025] derivative operator
 [02/02/2025] ran and dom commands, with "ran de" and "dom de" too
 [02/02/2025] hide/show chosen curves but keep them in plotlist
 [02/02/2025] log operator
@@ -35,7 +35,7 @@ NEEDED FEATURES LIST (this is always on top)
 [01/31/2025] color command works
 [01/31/2025] line styles commands work
 [01/31/2025] added a-zA-Z labeling for displayed curves
-[03/11/2024] read multiple files, allow 'mcur 3', meaning 'cur a.3, b.3, c.3' syntax
+[03/11/2024] allow 'mcur 3', meaning 'cur a.3, b.3, c.3' syntax
 [03/11/2024] read multiple files
 [03/05/2024] made a Plot class that holds title, labels, annotations, plotList
 [03/05/2024] title command works
@@ -140,4 +140,16 @@ well, too.
 
 --MON February 3, 2025
 
-Adding derivative function.
+Adding derivative function.  Not seeing a great function available in
+numpy for returning a curve that is the continuous integral of another
+curve.  Definitely don't want to call numpy.trapz(y,x) for every x
+point in the original curve, although maybe that would be so fast it
+would be ok, will have to test.  Super ugly though.  May have to write
+custom?? Yikes!
+
+--TUE February  4, 2025
+
+Adding 'span' command.  It makes a curve of y=x over a user specified
+range.  Useful for getting started when doing calculations.  Probably
+pretty useless after 'new curve' is implemented, but an easy one to
+knock off.
