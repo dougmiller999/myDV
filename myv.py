@@ -1,6 +1,7 @@
 import sys
 import numpy as np
 import copy
+import re
 
 import matplotlib
 # matplotlib.use('TkAgg')
@@ -128,6 +129,46 @@ def readADataEntry(lines, kLine):
 
     return moreCurves, kLine, thereAreHeaderLinesLeft
 
+################################################
+def expandColonSyntax(s):
+    '''take instances of 'a:e' and return 'a b c d e' '''
+    found = re.findall(r"\b\w:\w\b", s)
+    if len(found) > 0:
+        outList = []
+        for colonpair in found:
+            for c in p.plotList:
+                if c.plot==True:
+                    print('colonpair = ', colonpair)
+                    expansion = exp(colonpair)
+                    print('expansion = ', expansion)
+                    s = re.sub(colonpair, expansion, s)
+                    print('expanded s = ', s)
+    return s
+
+#-----------------------------------------------
+def exp(colonpair):
+    outList = []
+    pairMin = min(ord(colonpair[0]),ord(colonpair[2]))
+    pairMax = max(ord(colonpair[0]),ord(colonpair[2]))
+    for cid in [c.identifier for c in p.plotList]:
+        if ord(cid) in range(pairMin, pairMax+1):
+            outList.append(cid)
+        
+    return ' '.join(outList)
+
+# def exp(colonpair):
+#     print('colonpair = ', colonpair)
+#     outList = []
+#     pairMin = min(ord(colonpair[0]),ord(colonpair[2]))
+#     pairMax = max(ord(colonpair[0]),ord(colonpair[2]))
+#     for cid in pl:
+#         print('cid = ', cid)
+#         print('range = ', range(ord(colonpair[0]), ord(colonpair[2])+1))
+#         if ord(cid) in range(pairMin, pairMax+1):
+#             outList.append(cid)
+#             print('appended ', cid)
+#     print('returning ', ' '.join(outList))
+#     return ' '.join(outList)
 ################################################
 def doPlot():
     print('in doPlot')
@@ -264,17 +305,21 @@ def do_foo(x):
 def do_hide(line=None):
     if line is None: return
     print('hide ', line)
-    c = getCurveFromIdentifier(line.strip())
-    print('hide ', c.name)
-    c.plot = False
+    line_args = line.strip().split()
+    for cid in  line_args:
+        c = getCurveFromIdentifier(cid)
+        print('hide ', c.name)
+        c.plot = False
     doPlot()
 #-----------------------------------------------
 def do_show(line=None):
     if line is None: return
     print('show ', line)
-    c = getCurveFromIdentifier(line.strip())
-    print('show ', c.name)
-    c.plot = True
+    line_args = line.strip().split()
+    for cid in  line_args:
+        c = getCurveFromIdentifier(line.strip())
+        print('show ', c.name)
+        c.plot = True
     doPlot()
 #-----------------------------------------------
 def do_xls(line=None):
@@ -397,7 +442,7 @@ def do_mcur(line=None):
 
 def do_lst(line=None):
     # print(f'{line=}')
-    for c in enumerate(p.plotList):
+    for c in p.plotList:
         print( c.identifier, c.name, c.fileName)
 #-----------------------------------------------
         
@@ -625,6 +670,8 @@ def commandLoop():
     s = None
     while True:
         s = input('myv: ')
+        s = expandColonSyntax(s) # instances of 'a:c' -> 'a b c'
+        print('fully expanded s=',s)
 
         st = 'do_%s' % (s.split()[0])
         if len(s.split()) > 1:
