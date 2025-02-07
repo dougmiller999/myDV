@@ -16,7 +16,8 @@ NEEDED FEATURES LIST (this is always on top)
 [ ] read .myvrc file for initialization settings
 [-] read commands from a file: sort of; a here-doc, 'myv << EOF' works
 [ ] allow 'cur 3, b.3, c.3', syntax
-[02/05/2025] take a range of curves for args, e.g. 'color c:i red'
+[02/07/2025] take a range of numbers for args, e.g. 'cur 3:8'
+[02/05/2025] take a range of curve identifiers for args, e.g. 'color c:i red'
 [02/04/2025] 'span' command
 [02/03/2025] derivative operator
 [02/02/2025] ran and dom commands, with "ran de" and "dom de" too
@@ -173,3 +174,9 @@ curve.  Making a TODO item.
 --THU February  6, 2025
 
 Taking a minute to look at reorganizing the source.
+
+--FRI February  7, 2025
+
+Using the tool in anger on data from FLASH.  Also, adding colon
+expansion syntax for the 'curve' command, which is tricky because it
+takes numbers not letter.

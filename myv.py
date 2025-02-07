@@ -133,20 +133,27 @@ def readADataEntry(lines, kLine):
 def expandColonSyntax(s):
     '''take instances of 'a:e' and return 'a b c d e' '''
     found = re.findall(r"\b\w:\w\b", s)
+    print('found = ', found)
     if len(found) > 0:
         outList = []
         for colonpair in found:
-            for c in p.plotList:
-                if c.plot==True:
-                    print('colonpair = ', colonpair)
-                    expansion = exp(colonpair)
-                    print('expansion = ', expansion)
-                    s = re.sub(colonpair, expansion, s)
-                    print('expanded s = ', s)
+            if colonpair[0].isnumeric(): # it's curve numbers from the file
+                expansion = expandPairNumbers(colonpair)
+                print('expansion = ', expansion)
+                s = re.sub(colonpair, expansion, s)
+                print('expanded s = ', s)
+            else:
+                for c in p.plotList: # it's letters for the plotlist
+                    if c.plot==True:
+                        print('colonpair = ', colonpair)
+                        expansion = expandPairLetters(colonpair)
+                        print('expansion = ', expansion)
+                        s = re.sub(colonpair, expansion, s)
+                        print('expanded s = ', s)
     return s
 
 #-----------------------------------------------
-def exp(colonpair):
+def expandPairLetters(colonpair):
     outList = []
     pairMin = min(ord(colonpair[0]),ord(colonpair[2]))
     pairMax = max(ord(colonpair[0]),ord(colonpair[2]))
@@ -156,19 +163,16 @@ def exp(colonpair):
         
     return ' '.join(outList)
 
-# def exp(colonpair):
-#     print('colonpair = ', colonpair)
-#     outList = []
-#     pairMin = min(ord(colonpair[0]),ord(colonpair[2]))
-#     pairMax = max(ord(colonpair[0]),ord(colonpair[2]))
-#     for cid in pl:
-#         print('cid = ', cid)
-#         print('range = ', range(ord(colonpair[0]), ord(colonpair[2])+1))
-#         if ord(cid) in range(pairMin, pairMax+1):
-#             outList.append(cid)
-#             print('appended ', cid)
-#     print('returning ', ' '.join(outList))
-#     return ' '.join(outList)
+#-----------------------------------------------
+def expandPairNumbers(colonpair):
+    outList = []
+    pairMin = min(int(colonpair[0]),int(colonpair[2]))
+    pairMax = max(int(colonpair[0]),int(colonpair[2]))
+    for i in range(pairMin, pairMax+1):
+        outList.append(str(i)+' ')
+        
+    return ' '.join(outList)
+
 ################################################
 def doPlot():
     print('in doPlot')
