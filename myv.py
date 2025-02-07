@@ -316,6 +316,50 @@ def do_hide(line=None):
         c.plot = False
     doPlot()
 #-----------------------------------------------
+
+def do_label(line):
+    assert(len(line.split()) > 1)
+    # curveIndex = int(line.split()[0])
+    curveIdentifier = line.split()[0]
+    for i,c in enumerate(p.plotList):
+        if curveIdentifier == c.identifier:
+            break
+    c.label = ' '.join(line.split()[1:])
+    doPlot()
+#-----------------------------------------------
+
+def do_menu(line=None):
+    # print(f'menu {curves=}')
+    for i,c in enumerate(curves):
+        print(i, c.name) 
+#-----------------------------------------------
+def do_movefront(line=None):
+    '''move the named curve so it is plotted last'''
+    if line is None: return
+    print('movefront ', line)
+    line_args = line.strip().split()
+    for cid in  line_args:
+        c = getCurveFromIdentifier(cid)
+        p.plotList.remove(c)
+        p.plotList.append(c)
+    doPlot()
+#-----------------------------------------------
+def do_mf(line=None): # alias for movefront
+    do_movefront(line)
+#-----------------------------------------------
+
+def do_q():
+    print('in quit function', flush=True)
+    sys.exit(0)
+#-----------------------------------------------
+
+def do_p():
+    print('in p', flush=True)
+    doPlot()
+# def do_p(line = None):
+#     print('in p', flush=True)
+#     myv.plotItAll()
+#-----------------------------------------------
 def do_show(line=None):
     if line is None: return
     print('show ', line)
@@ -351,36 +395,6 @@ def do_yls(line=None):
         else:
             p.yscale = 'linear'
     doPlot()
-#-----------------------------------------------
-
-def do_label(line):
-    assert(len(line.split()) > 1)
-    # curveIndex = int(line.split()[0])
-    curveIdentifier = line.split()[0]
-    for i,c in enumerate(p.plotList):
-        if curveIdentifier == c.identifier:
-            break
-    c.label = ' '.join(line.split()[1:])
-    doPlot()
-#-----------------------------------------------
-
-def do_q():
-    print('in quit function', flush=True)
-    sys.exit(0)
-#-----------------------------------------------
-
-def do_p():
-    print('in p', flush=True)
-    doPlot()
-# def do_p(line = None):
-#     print('in p', flush=True)
-#     myv.plotItAll()
-#-----------------------------------------------
-
-def do_menu(line=None):
-    # print(f'menu {curves=}')
-    for i,c in enumerate(curves):
-        print(i, c.name) 
 #-----------------------------------------------
 
 def do_xlabel(line=None):
