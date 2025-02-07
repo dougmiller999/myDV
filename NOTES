@@ -1,5 +1,6 @@
 NEEDED FEATURES LIST (this is always on top)
 
+[ ] Refactor: funcs that affect plot from funcs that affect curves, unary from binary, etc.
 [ ] integral
 [ ] xmin, xmax?  maybe don't need if integral takes a range.
 [ ] change font size for labels, title axes numbers
@@ -15,7 +16,7 @@ NEEDED FEATURES LIST (this is always on top)
 [ ] read .myvrc file for initialization settings
 [-] read commands from a file: sort of; a here-doc, 'myv << EOF' works
 [ ] allow 'cur 3, b.3, c.3', syntax
-[02/04/2025] take a range of curves for args, e.g. 'color c:i red'
+[02/05/2025] take a range of curves for args, e.g. 'color c:i red'
 [02/04/2025] 'span' command
 [02/03/2025] derivative operator
 [02/02/2025] ran and dom commands, with "ran de" and "dom de" too
@@ -155,3 +156,20 @@ pretty useless after 'new curve' is implemented, but an easy one to
 knock off.
 
 Adding the 'a:c' -> 'a b c' syntax that expands colon expressions.
+
+--WED February  5, 2025
+
+Colon expression expansion still has a few bugs though most functions are working fine.
+This example fails though:
+
+hide b:c (works)
+show b:c (only c is displayed)
+
+Digging.  Ok, fixed, but *super* *obviously* I need to get organized
+here, with functions that affect plots separated from functions that
+do things to curves (and take multiple args) and funcs that return a
+curve.  Making a TODO item.
+
+--THU February  6, 2025
+
+Taking a minute to look at reorganizing the source.

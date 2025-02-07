@@ -317,7 +317,7 @@ def do_show(line=None):
     print('show ', line)
     line_args = line.strip().split()
     for cid in  line_args:
-        c = getCurveFromIdentifier(line.strip())
+        c = getCurveFromIdentifier(cid)
         print('show ', c.name)
         c.plot = True
     doPlot()
