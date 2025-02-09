@@ -4,8 +4,6 @@ NEEDED FEATURES LIST (this is always on top)
 [ ] integral
 [ ] xmin, xmax?  maybe don't need if integral takes a range.
 [ ] change font size for labels, title axes numbers
-[ ] hide/show legend
-[ ] put legend ur, ul, lr, ll
 [ ] newcurve: generates new curve from python syntax, e.g. 'nc a.x**2 + 3*a.x'
 [ ] L2 norm
 [ ] fit command: 'fit a 1 logy xmin xmax'
@@ -13,6 +11,8 @@ NEEDED FEATURES LIST (this is always on top)
 [ ] read .myvrc file for initialization settings
 [-] read commands from a file: sort of; a here-doc, 'myv << EOF' works
 [ ] allow 'cur 3, b.3, c.3', syntax
+[02/08/2025] put legend ur, ul, lr, ll
+[02/08/2025] hide/show legend
 [02/08/2025] cur command takes menu output: 'cur menu foo*'
 [02/08/2025] menu command takes wildcards (i.e., regexes)
 [02/08/2025] make command line have editing and history functions
@@ -210,3 +210,5 @@ to just examine the second argument to 'cur', and if it is 'menu' then
 call do_menu(line[2:]), capture the output as a string 'line' (which
 now looks like an input line to the 'cur' command), and feed it to
 do_cur(line).  And it works, first time, woo!
+
+Added hide/show/position the legend, or "key".  

@@ -55,6 +55,7 @@ class Plot():
                            'v' : 'v',
                            'x' : 'x',
                            'diamond' : 'D'}
+        self.key = 'on' # 'on', 'off', 'ul', 'ur', 'll', 'lr'
         
     def getNextIdentifier(self):
         index = self.currentCurveIdentifierIndex
@@ -193,7 +194,27 @@ def doPlot():
             legendList.append(c.identifier + ' - ' + c.label)
 
     # plot the legend
-    plt.legend(legendList)
+    keyDict = {'ur': 'upper right',
+               'cr': 'center right',
+               'lr': 'lower right',
+               'ul': 'upper left',
+               'cl': 'center left',
+               'll': 'lower left',
+               'uc': 'upper center',
+               'cc': 'center',
+               'lc': 'lower center',
+               'off': 'off',
+               'on': 'on',
+    }
+    if p.key != 'off' and p.key != 'on':
+        keyLocation = keyDict[p.key]
+        plt.legend(legendList, loc=keyLocation)
+    elif p.key == 'on':  # plot wherever matplotlib thinks best
+        plt.legend(legendList)
+    elif p.key == 'off':
+        pass # don't plot the legend
+        
+        
 
     
     # handle axis labels
@@ -314,6 +335,12 @@ def do_hide(line=None):
         c = getCurveFromIdentifier(cid)
         print('hide ', c.name)
         c.plot = False
+    doPlot()
+#-----------------------------------------------
+def do_key(line=None):
+    if line is None: return
+    print('key ', line)
+    p.key = line.strip() # arg can only be one word
     doPlot()
 #-----------------------------------------------
 
