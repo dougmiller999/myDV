@@ -2,9 +2,10 @@ import sys
 import numpy as np
 import copy
 import re
+import readline
 
 import matplotlib
-# matplotlib.use('TkAgg')
+matplotlib.use('TkAgg')
 from matplotlib import pyplot as plt
 
 ################################################
@@ -144,12 +145,11 @@ def expandColonSyntax(s):
                 print('expanded s = ', s)
             else:
                 for c in p.plotList: # it's letters for the plotlist
-                    if c.plot==True:
-                        print('colonpair = ', colonpair)
-                        expansion = expandPairLetters(colonpair)
-                        print('expansion = ', expansion)
-                        s = re.sub(colonpair, expansion, s)
-                        print('expanded s = ', s)
+                    print('colonpair = ', colonpair)
+                    expansion = expandPairLetters(colonpair)
+                    print('expansion = ', expansion)
+                    s = re.sub(colonpair, expansion, s)
+                    print('expanded s = ', s)
     return s
 
 #-----------------------------------------------
@@ -317,7 +317,10 @@ def do_hide(line=None):
     doPlot()
 #-----------------------------------------------
 
-def do_label(line):
+def do_label(line=None):
+    if line is None: 
+        print('label: change legend label of a curve. e.g, "label a fooness "')
+        return
     assert(len(line.split()) > 1)
     # curveIndex = int(line.split()[0])
     curveIdentifier = line.split()[0]
@@ -329,9 +332,18 @@ def do_label(line):
 #-----------------------------------------------
 
 def do_menu(line=None):
-    # print(f'menu {curves=}')
+    outList = []
+    print(f'menu: {line=}')
+    if line is None: line = '.' # match everything, no filter
+    pattern = re.compile(line)
+    # filter on the pattern, if there is one
     for i,c in enumerate(curves):
-        print(i, c.name) 
+        if not re.search(pattern, c.name) is None:
+            print(i, c.name)
+            outList.append(str(i)) # sometimes we need the return
+    outList = ' '.join(outList)
+    return outList
+    
 #-----------------------------------------------
 def do_movefront(line=None):
     '''move the named curve so it is plotted last'''
@@ -362,11 +374,9 @@ def do_p():
 #-----------------------------------------------
 def do_show(line=None):
     if line is None: return
-    print('show ', line)
     line_args = line.strip().split()
     for cid in  line_args:
         c = getCurveFromIdentifier(cid)
-        print('show ', c.name)
         c.plot = True
     doPlot()
 #-----------------------------------------------
@@ -436,6 +446,16 @@ def addCurveToPlot(c):
 
 def do_cur(line=None):
     # print(f'{line=}')
+    if line is None: 
+        print('cur: add curves to plot. e.g, "cur a c "')
+        return
+    line = line.strip()
+    # if the 1st arg is 'menu', then process the menu command
+    # and feed its result into 'do_cur'
+    if line.split()[0] == 'menu':
+        line = do_menu(line.split()[1])
+    else:
+        pass #otherwish just use the line of args as normal
     for w in line.split():
         # print(f'{w=}')
         c = copy.deepcopy(curves[int(w)])
@@ -449,6 +469,9 @@ def do_c(line=None):
 
 def do_mcur(line=None):
     print(f'mucr {line=}')
+    if line is None: 
+        print('mcur: plot multiple curves. e.g, "mcur 4" plots 4th curve of every file.')
+        return
     for w in line.split():
         print(f'mcur {w=}')
         for offset, fileName in fileIndex:
@@ -466,6 +489,9 @@ def do_lst(line=None):
         
 def do_del(line=None):
     # print(f'{line=}')
+    if line is None: 
+        print('del: delete curves. e.g, "del a c "')
+        return
     cids = line.split()
     for cid in cids:
         c = getCurveFromIdentifier(cid)
@@ -485,6 +511,9 @@ def do_era(line=None):
 #-----------------------------------------------
 def do_color(line=None):
     # print(f'{line=}')
+    if line is None: 
+        print('color: change color of curves. e.g, "color a c red"')
+        return
     cids = line.split()[:-1]
     color = line.split()[-1]
     for cid in cids:
@@ -494,6 +523,9 @@ def do_color(line=None):
 #-----------------------------------------------
 def do_ls(line=None):
     # print(f'{line=}')
+    if line is None: 
+        print('ls: change linestyle of curves. e.g, "ls a c dashed"')
+        return
     cids = line.split()[:-1]
     style = line.split()[-1]
     for cid in cids:
@@ -566,10 +598,16 @@ def do_mul(line=None):
 #-----------------------------------------------
 def do_div(line=None):
     # print(f'{line=}')
+    if line is None: 
+        print('div: takes 2 curve args, divides them.  Example - "div a b "')
+        return
     doAopB('/', line)
 #-----------------------------------------------
 def do_mx(line=None):
     #('') print(f'{line=}')
+    if line is None: 
+        print('mx: multiplies x of curves.  Example - "mx a b c 1e9"')
+        return
     line_args = line.split()
     mFactor = float(line_args[-1])
     for cid in line_args[:-1]:
@@ -579,6 +617,9 @@ def do_mx(line=None):
 #-----------------------------------------------
 def do_my(line=None):
     # print(f'{line=}')
+    if line is None: 
+        print('my: multiplies y of curves.  Example - "my a b c 1e9"')
+        return
     line_args = line.split()
     mFactor = float(line_args[-1])
     for cid in line_args[:-1]:

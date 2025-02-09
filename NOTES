@@ -9,13 +9,13 @@ NEEDED FEATURES LIST (this is always on top)
 [ ] newcurve: generates new curve from python syntax, e.g. 'nc a.x**2 + 3*a.x'
 [ ] L2 norm
 [ ] fit command: 'fit a 1 logy xmin xmax'
-[ ] give the command line editor and history functions
-[ ] menu command takes wildcards
-[ ] cur command takes menu output: 'cur(menu foo*)'
 [ ] specify position and size of initial plot window
 [ ] read .myvrc file for initialization settings
 [-] read commands from a file: sort of; a here-doc, 'myv << EOF' works
 [ ] allow 'cur 3, b.3, c.3', syntax
+[02/08/2025] cur command takes menu output: 'cur menu foo*'
+[02/08/2025] menu command takes wildcards (i.e., regexes)
+[02/08/2025] make command line have editing and history functions
 [02/07/2025] movefront command, to show the curve we want to see
 [02/07/2025] take a range of numbers for args, e.g. 'cur 3:8'
 [02/05/2025] take a range of curve identifiers for args, e.g. 'color c:i red'
@@ -184,3 +184,29 @@ takes numbers not letter.
 
 I can see we need the 'movefront' command to see the curve we want to
 see!  Added that.
+
+--SAT February  8, 2025
+
+Debugged why 'show' was not taking colon expansions correctly.  We
+were assuming that curve.plot==True as a good filter for appling
+commands, but actually (think about it) do_show() won't work if you
+filter for curve.plot == True, so we are just taking that off for
+everybody.  If you apply 'color' to a bunch of hidden curves, their
+color changes, sorry.  Also, adding more user input checking so the
+tool crashes less often.
+
+OMG, it is as easy as just importing the 'readine' module and suddenly
+the 'input' command understands emacs editing of the command line,
+keeping a command history, and letting you search the history for a
+command.  This is great!  Another major life improvement knocked off
+the TODO list!
+
+And even better, it was trivial to add wildcards to the 'menu'
+command!  Well, we have to use python regex syntax, but that's ok.
+I'm pretty used to it by now anyway.
+
+Tried adding the 'cur(menu *)' functionality.  The easiest thing was
+to just examine the second argument to 'cur', and if it is 'menu' then
+call do_menu(line[2:]), capture the output as a string 'line' (which
+now looks like an input line to the 'cur' command), and feed it to
+do_cur(line).  And it works, first time, woo!
