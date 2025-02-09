@@ -4,13 +4,14 @@ NEEDED FEATURES LIST (this is always on top)
 [ ] integral
 [ ] xmin, xmax?  maybe don't need if integral takes a range.
 [ ] change font size for labels, title axes numbers
-[ ] newcurve: generates new curve from python syntax, e.g. 'nc a.x**2 + 3*a.x'
 [ ] L2 norm
 [ ] fit command: 'fit a 1 logy xmin xmax'
 [ ] specify position and size of initial plot window
 [ ] read .myvrc file for initialization settings
 [-] read commands from a file: sort of; a here-doc, 'myv << EOF' works
 [ ] allow 'cur 3, b.3, c.3', syntax
+[02/08/2025] newcurve: generates new curve from python syntax,
+             e.g. 'nc x**2 + 3*x'
 [02/08/2025] put legend ur, ul, lr, ll
 [02/08/2025] hide/show legend
 [02/08/2025] cur command takes menu output: 'cur menu foo*'
@@ -211,4 +212,10 @@ call do_menu(line[2:]), capture the output as a string 'line' (which
 now looks like an input line to the 'cur' command), and feed it to
 do_cur(line).  And it works, first time, woo!
 
-Added hide/show/position the legend, or "key".  
+Added hide/show/position the legend, or "key".
+
+Could not resist adding the 'newcurve' command.  Modified, perhaps up
+graded from what PyDV had, in that simply 'x' is the independent
+variable, and users can specify a particular curve to be the supplier
+of the x-values if they want. Default is just to use the first curve
+in the plotList.  Not perfect but hey, this is for meeeee.

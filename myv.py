@@ -3,6 +3,7 @@ import numpy as np
 import copy
 import re
 import readline
+from numpy import sin, cos, log, exp
 
 import matplotlib
 matplotlib.use('TkAgg')
@@ -590,6 +591,34 @@ def doFunctionOfCurve(func,line=None):
 
     doPlot()
     
+#-----------------------------------------------
+def do_newcurve(line=None):
+    '''optional first arg is a curve to copy from,
+    second arg is the math expression, where x is the
+    independent variable.  "nc a sin(x)" or "nc exp(x)"'''
+    
+    print('newcurve: line = ', line)
+    line_args = line.split()
+    if len(line_args[0]) == 1 and line_args[0].isalpha():
+        c = getCurveFromIdentifier(line_args[0]) # get user's curve
+        mathExpression = ' '.join(line_args[1:])
+    else:
+        c = p.plotList[0] # just grab the first curve, it'll be fine
+        mathExpression = ' '.join(line_args)
+    x = c.x
+    print(f'newcurve: {mathExpression=}')
+    y = eval(mathExpression)  # actually do the operation here
+    cnew = Curve(name=mathExpression,
+                 x = x, y = y, plot = True,
+                 label = mathExpression,
+                 xlabel = None, fileName = None)
+    addCurveToPlot(cnew) # will add new curve identifier for us
+
+    doPlot()
+    
+#-----------------------------------------------
+def do_nc(line=None):  #alias for newcurve()
+    do_newcurve(line)
 #-----------------------------------------------
 def do_log(line=None):
     # print(f'{line=}')
