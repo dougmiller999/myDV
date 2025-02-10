@@ -1,4 +1,4 @@
-import sys
+import sys, os
 import numpy as np
 import copy
 import re
@@ -6,7 +6,7 @@ import readline
 from numpy import sin, cos, log, exp
 
 import matplotlib
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 from matplotlib import pyplot as plt
 
 ################################################
@@ -390,7 +390,13 @@ def do_mf(line=None): # alias for movefront
 
 def do_q():
     print('in quit function', flush=True)
-    sys.exit(0)
+    try:
+        readline.write_history_file(os.getenv('HOME') + '/.myvhistory')
+    except:
+        traceback.print_exc(file=sys.stdout)
+    finally:
+        sys.exit(0)
+        
 #-----------------------------------------------
 
 def do_p():
@@ -782,6 +788,12 @@ def do_span(line=None):
 
 def commandLoop():
 
+    try:
+        readline.read_history_file(os.getenv('HOME') + '/.myvhistory')
+    except:
+        f = open(os.getenv('HOME') + '/.myvhistory', 'w')
+        f.close()
+        
     s = None
     while True:
         s = input('myv: ')

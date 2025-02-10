@@ -219,3 +219,9 @@ graded from what PyDV had, in that simply 'x' is the independent
 variable, and users can specify a particular curve to be the supplier
 of the x-values if they want. Default is just to use the first curve
 in the plotList.  Not perfect but hey, this is for meeeee.
+
+--MON February 10, 2025
+
+As long as we're doing it, may as well add between-sessions history
+recording, which is trivial with the readline module.  Ok, added
+history that is preserved across sessions.
