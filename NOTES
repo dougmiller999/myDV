@@ -3,13 +3,14 @@ NEEDED FEATURES LIST (this is always on top)
 [ ] Refactor: funcs that affect plot from funcs that affect curves, unary from binary, etc.
 [ ] integral
 [ ] xmin, xmax?  maybe don't need if integral takes a range.
-[ ] change font size for labels, title axes numbers
 [ ] L2 norm
 [ ] fit command: 'fit a 1 logy xmin xmax'
 [ ] specify position and size of initial plot window
 [ ] read .myvrc file for initialization settings
 [-] read commands from a file: sort of; a here-doc, 'myv << EOF' works
 [ ] allow 'cur 3, b.3, c.3', syntax
+[02/10/2025] change font size for labels, title axes numbers
+[02/10/2025] Made history persistent across sessions with .myvhistory file
 [02/08/2025] newcurve: generates new curve from python syntax,
              e.g. 'nc x**2 + 3*x'
 [02/08/2025] put legend ur, ul, lr, ll
@@ -225,3 +226,5 @@ in the plotList.  Not perfect but hey, this is for meeeee.
 As long as we're doing it, may as well add between-sessions history
 recording, which is trivial with the readline module.  Ok, added
 history that is preserved across sessions.
+
+Added changing the fontsize.

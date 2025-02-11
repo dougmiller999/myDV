@@ -327,6 +327,18 @@ def getCurves():
 
 def do_foo(x):
     print('x = ',x)
+    plt.rc('font', size=22)
+#-----------------------------------------------
+def do_fontsize(line=None):
+    if line is None or len(line.split()) > 1:
+        print('fontsize: takes one integer argument')
+        return
+    plt.rc('font', size=int(line.strip()))
+    doPlot()
+           
+#-----------------------------------------------
+def do_fs(line=None):
+    do_fontsize(line)
 #-----------------------------------------------
 def do_hide(line=None):
     if line is None: return
@@ -800,6 +812,8 @@ def commandLoop():
         s = expandColonSyntax(s) # instances of 'a:c' -> 'a b c'
         print('fully expanded s=',s)
 
+        if s == '': continue
+        
         st = 'do_%s' % (s.split()[0])
         if len(s.split()) > 1:
             st += '("%s")' % (' '.join(s.split()[1:]))
