@@ -228,3 +228,13 @@ recording, which is trivial with the readline module.  Ok, added
 history that is preserved across sessions.
 
 Added changing the fontsize.
+
+--TUE February 11, 2025
+
+Do you wonder where I'm getting the time to do this?  It's mostly the little
+snippets between when I submit a job and the job starts running.
+
+Looking at integrate operation.  Scipy has integrate.cumtrapz, but it
+weirdly returns one fewer values that I think it should.  And it gets
+"integrate a constant" wrong?  I think I'm just not centering their
+answer correctly, but it's weird.
