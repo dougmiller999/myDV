@@ -11,6 +11,7 @@ from matplotlib import pyplot as plt
 
 ################################################
 class Curve():
+    plt.gca().set_prop_cycle(None) # reset color cycle at startup
     colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
     colorIndex = 0
 
@@ -22,12 +23,14 @@ class Curve():
         self.y = y
         self.plot = plot
         self.style = 'o-'  # line style the curve will be plotted with
+        self.width = 1  # line width the curve will be plotted with
         self.color = Curve.colors[Curve.colorIndex]
         Curve.colorIndex = (Curve.colorIndex  + 1) % len(Curve.colors)
         self.label = label  # this get printed in plot legend
         self.identifier = identifier # this is the 'A,B,etc' label by which the user will refer to the curve
         self.xlabel = xlabel  # what goes at the bottom of the plot
         self.fileName = fileName  # file the curve came from
+        self.fill = False
 
 ################################################
 class Plot():
@@ -130,28 +133,33 @@ def readADataEntry(lines, kLine):
                         label = curveNames[i],
                         xlabel = xlabelName) for i,c in enumerate(curves)]
 
+    # warning that you can have too many curves for our little system
+    # here to plot all of them at once, because we label them A-Za-z
+    if (len(moreCurves) > 26*2):
+        print('WARNING, you have more than 52 curves, and we can only plot 52 at a time')
+        
     return moreCurves, kLine, thereAreHeaderLinesLeft
 
 ################################################
 def expandColonSyntax(s):
     '''take instances of 'a:e' and return 'a b c d e' '''
     found = re.findall(r"\b\w:\w\b", s)
-    print('found = ', found)
+    # print('found = ', found)
     if len(found) > 0:
         outList = []
         for colonpair in found:
             if colonpair[0].isnumeric(): # it's curve numbers from the file
                 expansion = expandPairNumbers(colonpair)
-                print('expansion = ', expansion)
+                # print('expansion = ', expansion)
                 s = re.sub(colonpair, expansion, s)
-                print('expanded s = ', s)
+                # print('expanded s = ', s)
             else:
                 for c in p.plotList: # it's letters for the plotlist
-                    print('colonpair = ', colonpair)
+                    # print('colonpair = ', colonpair)
                     expansion = expandPairLetters(colonpair)
-                    print('expansion = ', expansion)
+                    # print('expansion = ', expansion)
                     s = re.sub(colonpair, expansion, s)
-                    print('expanded s = ', s)
+                    # print('expanded s = ', s)
     return s
 
 #-----------------------------------------------
@@ -177,7 +185,7 @@ def expandPairNumbers(colonpair):
 
 ################################################
 def doPlot():
-    print('in doPlot')
+    # print('in doPlot')
 
     plt.cla()
     plt.ion()
@@ -190,9 +198,12 @@ def doPlot():
                 style = p.styleDict[c.style]
             else:
                 style = c.style
-            plt.plot(c.x, c.y, style, color=c.color)
+            plt.plot(c.x, c.y, style, color=c.color, linewidth=c.width)
             # and only the plotted curves are in legend
             legendList.append(c.identifier + ' - ' + c.label)
+            # do shading under the plot if the curve says to
+            if c.fill == True:
+                plt.fill_between(x=c.x, y1=c.y, alpha=0.2)
 
     # plot the legend
     keyDict = {'ur': 'upper right',
@@ -219,7 +230,7 @@ def doPlot():
 
     
     # handle axis labels
-    # print('doPlot, ylabel = ', p.ylabel)
+    # # print('doPlot, ylabel = ', p.ylabel)
     if len(p.plotList) == 1 and p.ylabel == '':
         plt.ylabel(p.plotList[0].name)
     else:
@@ -264,7 +275,7 @@ def getCurves():
         raise RuntimeError('no data file given')
 
     fileIndex = [[0, f] for f in sys.argv[1:]]
-    print(f'{fileIndex=}')
+    # print(f'{fileIndex=}')
         
     for j, fileName in enumerate(sys.argv[1:]):
         
@@ -277,7 +288,7 @@ def getCurves():
         # read the file in
         print('reading data file "%s"' % fileName) 
         lines = f.readlines()
-        print(f'file has %d lines' % len(lines))
+        # print(f'file has %d lines' % len(lines))
 
         # skip to first data header line
         kLine = 0
@@ -309,7 +320,7 @@ def getCurves():
         if j < len(sys.argv[1:])-1:
             fileIndex[j+1][0] = len(curves)
             
-        print(f'{fileIndex=}')
+        # print(f'{fileIndex=}')
         
 
         # doPlot(curves)
@@ -319,7 +330,7 @@ def getCurves():
         # #########
         # doPlot(curves)
         # #########
-    print(f'{fileIndex=}')
+    # print(f'{fileIndex=}')
     
     return curves, fileIndex
  
@@ -328,6 +339,21 @@ def getCurves():
 def do_foo(x):
     print('x = ',x)
     plt.rc('font', size=22)
+#-----------------------------------------------
+def do_fill(line=None):
+    if line is None: return
+    print('fill ', line)
+    line_args = line.strip().split()
+    if line_args[-1] == 'on':
+        val = True
+    elif line_args[-1] == 'off':
+        val = False
+    else:
+        raise RuntimeError('usage: fill a b c on/off')
+    for cid in line_args[:-1]:
+        c = getCurveFromIdentifier(cid)
+        c.fill = val
+    doPlot()
 #-----------------------------------------------
 def do_fontsize(line=None):
     if line is None or len(line.split()) > 1:
@@ -342,17 +368,17 @@ def do_fs(line=None):
 #-----------------------------------------------
 def do_hide(line=None):
     if line is None: return
-    print('hide ', line)
+    # print('hide ', line)
     line_args = line.strip().split()
     for cid in  line_args:
         c = getCurveFromIdentifier(cid)
-        print('hide ', c.name)
+        # print('hide ', c.name)
         c.plot = False
     doPlot()
 #-----------------------------------------------
 def do_key(line=None):
     if line is None: return
-    print('key ', line)
+    # print('key ', line)
     p.key = line.strip() # arg can only be one word
     doPlot()
 #-----------------------------------------------
@@ -368,6 +394,17 @@ def do_label(line=None):
         if curveIdentifier == c.identifier:
             break
     c.label = ' '.join(line.split()[1:])
+    doPlot()
+#-----------------------------------------------
+
+def do_labelfilenames(line=None):
+    if line is None: 
+        print('label: add filename to legend label of a curve.')
+        return
+    line_args = line.strip().split()
+    for cID in line_args:
+        c = getCurveFromIdentifier(cID) # argument
+        c.label = c.label + ': '+c.fileName
     doPlot()
 #-----------------------------------------------
 
@@ -388,7 +425,7 @@ def do_menu(line=None):
 def do_movefront(line=None):
     '''move the named curve so it is plotted last'''
     if line is None: return
-    print('movefront ', line)
+    # print('movefront ', line)
     line_args = line.strip().split()
     for cid in  line_args:
         c = getCurveFromIdentifier(cid)
@@ -401,7 +438,7 @@ def do_mf(line=None): # alias for movefront
 #-----------------------------------------------
 
 def do_q():
-    print('in quit function', flush=True)
+    # print('in quit function', flush=True)
     try:
         readline.write_history_file(os.getenv('HOME') + '/.myvhistory')
     except:
@@ -412,7 +449,7 @@ def do_q():
 #-----------------------------------------------
 
 def do_p():
-    print('in p', flush=True)
+    # print('in p', flush=True)
     doPlot()
 # def do_p(line = None):
 #     print('in p', flush=True)
@@ -514,14 +551,14 @@ def do_c(line=None):
 #-----------------------------------------------
 
 def do_mcur(line=None):
-    print(f'mucr {line=}')
+    # print(f'mucr {line=}')
     if line is None: 
         print('mcur: plot multiple curves. e.g, "mcur 4" plots 4th curve of every file.')
         return
     for w in line.split():
-        print(f'mcur {w=}')
+        # print(f'mcur {w=}')
         for offset, fileName in fileIndex:
-            print(f'mcur {offset=}')
+            # print(f'mcur {offset=}')
             c = copy.deepcopy(curves[offset+int(w)])
             addCurveToPlot(c)
     doPlot()
@@ -576,7 +613,31 @@ def do_ls(line=None):
     style = line.split()[-1]
     for cid in cids:
         c = getCurveFromIdentifier(cid)
-        c.style = style # will get converted at plot time
+        c.style = style # converted at plot time to legit matplotlib style
+    doPlot()
+#-----------------------------------------------
+def do_lw(line=None):
+    # print(f'{line=}')
+    if line is None: 
+        print('ls: change linewidth of curves. e.g, "lw a:c 3"')
+        return
+    cids = line.split()[:-1]
+    width = line.split()[-1]
+    for cid in cids:
+        c = getCurveFromIdentifier(cid)
+        c.width = width
+    doPlot()
+#-----------------------------------------------
+def do_makecolor(line=None):
+    if line is None: 
+        print('makecolor: make color of first curve the same as second curve,. e.g,\
+        "makecolor b f"')
+        return
+    targetID = line.split()[0]
+    sourceID = line.split()[1]
+    targetC = getCurveFromIdentifier(targetID)
+    sourceC = getCurveFromIdentifier(sourceID)
+    targetC.color = sourceC.color
     doPlot()
 #-----------------------------------------------
 def doAopB(op,line=None):
@@ -758,16 +819,38 @@ def do_dom(line=None):
     
 #-----------------------------------------------
 
+def do_xmin(line=None):
+    '''return new curve that is the old curve from arg to end'''
+    line_args = line.split()
+    for cID in line_args[:-1]: # last arg is the mix_x value
+        c = getCurveFromIdentifier(cID) # argument
+        min_x = float(line_args[-1])
+        for k,x in enumerate(c.x):
+            if x > min_x:
+                break
+        new_x = c.x[k:]
+        new_y = c.y[k:]
+        cnew = Curve(name='xmin('+c.identifier+')',
+                     x = new_x, y = new_y, plot = True,
+                     label = 'xmin('+c.identifier+')',
+                     xlabel = None, fileName = None)
+        addCurveToPlot(cnew) # will add new curve identifier for us
+
+    doPlot()
+    
+#-----------------------------------------------
+
 def do_der(line=None):
     '''return new curve that is derivative of the curve'''
     line_args = line.split()
-    c = getCurveFromIdentifier(line_args[0]) # argument
-    y = np.gradient(c.y, c.x)  # actually do the operation here
-    cnew = Curve(name='deriv(c.identifier)',
-                 x = c.x, y = y, plot = True,
-                 label = 'deriv('+c.identifier+')',
-                 xlabel = None, fileName = None)
-    addCurveToPlot(cnew) # will add new curve identifier for us
+    for cID in line_args:
+        c = getCurveFromIdentifier(cID) # argument
+        y = np.gradient(c.y, c.x)  # actually do the operation here
+        cnew = Curve(name='deriv('+c.identifier+')',
+                     x = c.x, y = y, plot = True,
+                     label = 'deriv('+c.identifier+')',
+                     xlabel = None, fileName = c.fileName)
+        addCurveToPlot(cnew) # will add new curve identifier for us
 
     doPlot()
     
@@ -800,6 +883,8 @@ def do_span(line=None):
 
 def commandLoop():
 
+    debug = False
+    
     try:
         readline.read_history_file(os.getenv('HOME') + '/.myvhistory')
     except:
@@ -812,6 +897,14 @@ def commandLoop():
         s = expandColonSyntax(s) # instances of 'a:c' -> 'a b c'
         print('fully expanded s=',s)
 
+        # toggle debug if needed
+        if s == 'debug' and debug == False:
+            debug = True
+            continue
+        elif s == 'debug' and debug == True:
+            debug = False
+            continue
+            
         if s == '': continue
         
         st = 'do_%s' % (s.split()[0])
@@ -820,12 +913,13 @@ def commandLoop():
         else:
             st += '()'
 
-        eval(st)  # leave unprotected so we can see errors while developing
-        try:
-            pass
-            # eval(st)
-        except NameError:
-            print('error, no such command, "%s"' % st, flush=True)
+        if debug:
+            eval(st)  # leave unprotected so we can see errors while developing
+        else:
+            try:
+                eval(st)
+            except NameError:
+                print('error, no such command, "%s"' % st, flush=True)
 
     print('out of the while loop', flush = True)
     

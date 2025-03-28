@@ -9,6 +9,9 @@ NEEDED FEATURES LIST (this is always on top)
 [ ] read .myvrc file for initialization settings
 [-] read commands from a file: sort of; a here-doc, 'myv << EOF' works
 [ ] allow 'cur 3, b.3, c.3', syntax
+[03/28/2025] removed a lot of debug prints, added makecolor command, added 'lw' command
+[03/27/2025] many upgrades; colon syntax for der, labelfilenames, 'debug' toggle
+[03/14/2025] xmin command, also 'fill' command does shading
 [02/10/2025] change font size for labels, title axes numbers
 [02/10/2025] Made history persistent across sessions with .myvhistory file
 [02/08/2025] newcurve: generates new curve from python syntax,
@@ -238,3 +241,15 @@ Looking at integrate operation.  Scipy has integrate.cumtrapz, but it
 weirdly returns one fewer values that I think it should.  And it gets
 "integrate a constant" wrong?  I think I'm just not centering their
 answer correctly, but it's weird.
+
+--THU March 27, 2025
+
+Heavily using at PF for analysis.  Made 'der' command accept colon
+syntax.  Added 'labelfilenames' command, which appends the file name
+to the legend label.
+
+--FRI March 28, 2025
+
+Added 'makecolor', a new idea, where 'makecolor a b' set the color
+of 'a' according to the color of 'b'.
+
