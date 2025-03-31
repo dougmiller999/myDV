@@ -2,13 +2,13 @@ NEEDED FEATURES LIST (this is always on top)
 
 [ ] Refactor: funcs that affect plot from funcs that affect curves, unary from binary, etc.
 [ ] integral
-[ ] xmin, xmax?  maybe don't need if integral takes a range.
+[ ] xmax?  maybe don't need if integral takes a range.
 [ ] L2 norm
 [ ] fit command: 'fit a 1 logy xmin xmax'
-[ ] specify position and size of initial plot window
 [ ] read .myvrc file for initialization settings
 [-] read commands from a file: sort of; a here-doc, 'myv << EOF' works
 [ ] allow 'cur 3, b.3, c.3', syntax
+[03/31/2025] specify position and size of initial plot window
 [03/28/2025] removed a lot of debug prints, added makecolor command, added 'lw' command
 [03/27/2025] many upgrades; colon syntax for der, labelfilenames, 'debug' toggle
 [03/14/2025] xmin command, also 'fill' command does shading
@@ -253,3 +253,11 @@ to the legend label.
 Added 'makecolor', a new idea, where 'makecolor a b' set the color
 of 'a' according to the color of 'b'.
 
+--MON March 31, 2025
+
+Upgraded 'makecolor' to take two lists, mapping the colors of the first
+from the colors of the second.  As in, "makecolor e:h a:d" will color
+the e:h curves using the a:d colors.
+
+Added ability to specify position and size of initial plot window,
+finally.  Functioning depends on the back-end, though.

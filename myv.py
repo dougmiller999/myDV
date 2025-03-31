@@ -633,11 +633,17 @@ def do_makecolor(line=None):
         print('makecolor: make color of first curve the same as second curve,. e.g,\
         "makecolor b f"')
         return
-    targetID = line.split()[0]
-    sourceID = line.split()[1]
-    targetC = getCurveFromIdentifier(targetID)
-    sourceC = getCurveFromIdentifier(sourceID)
-    targetC.color = sourceC.color
+    print('line = ',line)
+    line_args = line.split()
+    # we must have an even number of target-source pairs
+    N = len(line_args)
+    if N %2 != 0 or N == 0:
+        print('makecolor: must have an even number of arg so targets match sources')
+        return
+    for targetID, sourceID in zip(line_args[0:N//2],line_args[N//2:]):
+        targetC = getCurveFromIdentifier(targetID)
+        sourceC = getCurveFromIdentifier(sourceID)
+        targetC.color = sourceC.color
     doPlot()
 #-----------------------------------------------
 def doAopB(op,line=None):
@@ -929,3 +935,26 @@ def commandLoop():
 curves, fileIndex = getCurves()
 p = Plot()
 
+manager = plt.get_current_fig_manager()
+manager.window.setGeometry(1500,100,800,800)
+
+### window positioning taken from this example on
+### stackoverflow discussion:
+# import matplotlib
+# import matplotlib.pyplot as plt
+
+# def move_figure(f, x, y):
+#     """Move figure's upper left corner to pixel (x, y)"""
+#     backend = matplotlib.get_backend()
+#     if backend == 'TkAgg':
+#         f.canvas.manager.window.wm_geometry("+%d+%d" % (x, y))
+#     elif backend == 'WXAgg':
+#         f.canvas.manager.window.SetPosition((x, y))
+#     else:
+#         # This works for QT and GTK
+#         # You can also use window.setGeometry
+#         f.canvas.manager.window.move(x, y)
+
+# f, ax = plt.subplots()
+# move_figure(f, 500, 500)
+# plt.show()
