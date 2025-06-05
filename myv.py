@@ -744,6 +744,30 @@ def do_div(line=None):
         return
     doAopB('/', line)
 #-----------------------------------------------
+def do_dx(line=None):
+    #('') print(f'{line=}')
+    if line is None: 
+        print('dx: shifts x of curves.  Example - "dx a b c 23.3"')
+        return
+    line_args = line.split()
+    dFactor = float(line_args[-1])
+    for cid in line_args[:-1]:
+        c = getCurveFromIdentifier(cid)
+        c.x = dFactor+c.x
+    doPlot()
+#-----------------------------------------------
+def do_dy(line=None):
+    # print(f'{line=}')
+    if line is None: 
+        print('dy: shifts y of curves.  Example - "dy a b c 32.2"')
+        return
+    line_args = line.split()
+    dFactor = float(line_args[-1])
+    for cid in line_args[:-1]:
+        c = getCurveFromIdentifier(cid)
+        c.y = dFactor+c.y
+    doPlot()
+#-----------------------------------------------
 def do_mx(line=None):
     #('') print(f'{line=}')
     if line is None: 

@@ -8,14 +8,15 @@ NEEDED FEATURES LIST (this is always on top)
 [ ] read .myvrc file for initialization settings
 [-] read commands from a file: sort of; a here-doc, 'myv << EOF' works
 [ ] allow 'cur 3, b.3, c.3', syntax
+[06/05/2025] dx, dy, curve shift functions
+[03/31/2025] makecolor, copies colors from one curve range to another range
 [03/31/2025] specify position and size of initial plot window
 [03/28/2025] removed a lot of debug prints, added makecolor command, added 'lw' command
 [03/27/2025] many upgrades; colon syntax for der, labelfilenames, 'debug' toggle
 [03/14/2025] xmin command, also 'fill' command does shading
 [02/10/2025] change font size for labels, title axes numbers
 [02/10/2025] Made history persistent across sessions with .myvhistory file
-[02/08/2025] newcurve: generates new curve from python syntax,
-             e.g. 'nc x**2 + 3*x'
+[02/08/2025] newcurve: generates new curve from python syntax, e.g. 'nc x**2 + 3*x'
 [02/08/2025] put legend ur, ul, lr, ll
 [02/08/2025] hide/show legend
 [02/08/2025] cur command takes menu output: 'cur menu foo*'
@@ -39,7 +40,7 @@ NEEDED FEATURES LIST (this is always on top)
 [02/01/2025] a*b operator
 [01/31/2025] a + b operator works as 'add a b' command
 [01/31/2025] adding utility commands like getCurveFromId, addCurveToPlot
-[01/31/2025] mx, my commands work
+[01/31/2025] mx, my, curve scaling commands work
 [01/31/2025] color command works
 [01/31/2025] line styles commands work
 [01/31/2025] added a-zA-Z labeling for displayed curves
@@ -261,3 +262,8 @@ the e:h curves using the a:d colors.
 
 Added ability to specify position and size of initial plot window,
 finally.  Functioning depends on the back-end, though.
+
+--THU June  5, 2025
+
+Need the 'dx' and 'dy' functions to shift curves up and down and side to side.
+Guess we forgot to put that in.  Doing today.
