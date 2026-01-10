@@ -8,6 +8,7 @@ NEEDED FEATURES LIST (this is always on top)
 [ ] read .myvrc file for initialization settings
 [-] read commands from a file: sort of; a here-doc, 'myv << EOF' works
 [ ] allow 'cur 3, b.3, c.3', syntax
+[01/09/2026] added markersize command
 [06/05/2025] dx, dy, curve shift functions
 [03/31/2025] makecolor, copies colors from one curve range to another range
 [03/31/2025] specify position and size of initial plot window
