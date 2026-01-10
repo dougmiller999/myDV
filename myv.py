@@ -24,6 +24,7 @@ class Curve():
         self.plot = plot
         self.style = 'o-'  # line style the curve will be plotted with
         self.width = 1  # line width the curve will be plotted with
+        self.markersize = 6 # default marker size, 6 pts
         self.color = Curve.colors[Curve.colorIndex]
         Curve.colorIndex = (Curve.colorIndex  + 1) % len(Curve.colors)
         self.label = label  # this get printed in plot legend
@@ -198,7 +199,8 @@ def doPlot():
                 style = p.styleDict[c.style]
             else:
                 style = c.style
-            plt.plot(c.x, c.y, style, color=c.color, linewidth=c.width)
+            plt.plot(c.x, c.y, style, color=c.color, linewidth=c.width,
+                     ms=c.markersize)
             # and only the plotted curves are in legend
             legendList.append(c.identifier + ' - ' + c.label)
             # do shading under the plot if the curve says to
@@ -336,7 +338,7 @@ def getCurves():
  
 ################################################
 
-def do_foo(x):
+def do_foo(x=0):
     print('x = ',x)
     plt.rc('font', size=22)
 #-----------------------------------------------
@@ -627,6 +629,21 @@ def do_lw(line=None):
         c = getCurveFromIdentifier(cid)
         c.width = width
     doPlot()
+#-----------------------------------------------
+def do_markersize(line=None):
+    if line is None: 
+        print('markersize: marker size is set for curves, e.g., "ms a c 20", 6 is default')
+        return
+    print('line = ',line)
+    cids = line.split()[:-1]
+    markersize = line.split()[-1]
+    for cid in cids:
+        c = getCurveFromIdentifier(cid)
+        c.markersize = int(markersize)
+    doPlot()
+#-----------------------------------------------
+def do_ms(line=None):
+    do_markersize(line)
 #-----------------------------------------------
 def do_makecolor(line=None):
     if line is None: 
