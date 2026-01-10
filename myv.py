@@ -53,6 +53,7 @@ class Plot():
         self.styleDict = { 'o-' : 'o-',
                            'solid' : '-',
                            'dashed' : '--',
+                           'dash' : '--',
                            'dash-dot' : '-.',
                            'dotted' : ':',
                            'o' :  'o',
