@@ -177,8 +177,9 @@ def expandPairLetters(colonpair):
 #-----------------------------------------------
 def expandPairNumbers(colonpair):
     outList = []
-    pairMin = min(int(colonpair[0]),int(colonpair[2]))
-    pairMax = max(int(colonpair[0]),int(colonpair[2]))
+    cp_tuple = colonpair.split(':')
+    pairMin = min(int(cp_tuple[0]),int(cp_tuple[1]))
+    pairMax = max(int(cp_tuple[0]),int(cp_tuple[1]))
     for i in range(pairMin, pairMax+1):
         outList.append(str(i)+' ')
         
