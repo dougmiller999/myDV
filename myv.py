@@ -850,7 +850,7 @@ def do_mdiv(line=None):
         print('mdiv: divides curves by x.  Example - "mdiv a b c 1e-9".  You have supplied x=zero, cannot divide by that.')
     for cid in line_args[:-1]:
         c = getCurveFromIdentifier(cid)
-        c.x = c.x/mFactor
+        c.y = c.y/mFactor
     doPlot()
 #-----------------------------------------------
 def do_mx(line=None):
