@@ -145,7 +145,7 @@ def readADataEntry(lines, kLine):
 ################################################
 def expandColonSyntax(s):
     '''take instances of 'a:e' and return 'a b c d e' '''
-    found = re.findall(r"\b\w:\w\b", s)
+    found = re.findall(r"\b\w+:\w+\b", s)
     # print('found = ', found)
     if len(found) > 0:
         outList = []
@@ -343,6 +343,82 @@ def getCurves():
 def do_foo(x=0):
     print('x = ',x)
     plt.rc('font', size=22)
+
+#-----------------------------------------------
+def do_add(line=None):
+    # print(f'{line=}')
+    doAopB('+', line)
+
+#-----------------------------------------------
+def do_cur(line=None):
+    # print(f'{line=}')
+    if line is None: 
+        print('cur: add curves to plot. e.g, "cur a c "')
+        return
+    line = line.strip()
+    # if the 1st arg is 'menu', then process the menu command
+    # and feed its result into 'do_cur'
+    if line.split()[0] == 'menu':
+        line = do_menu(line.split()[1])
+    else:
+        pass #otherwish just use the line of args as normal
+    for w in line.split():
+        # print(f'{w=}')
+        c = copy.deepcopy(curves[int(w)])
+        addCurveToPlot(c)
+    doPlot()
+    
+#-----------------------------------------------
+# alias for cur
+def do_c(line=None):
+    do_cur(line)
+    
+#-----------------------------------------------
+def do_der(line=None):
+    '''return new curve that is derivative of the curve'''
+    line_args = line.split()
+    for cID in line_args:
+        c = getCurveFromIdentifier(cID) # argument
+        y = np.gradient(c.y, c.x)  # actually do the operation here
+        cnew = Curve(name='deriv('+c.identifier+')',
+                     x = c.x, y = y, plot = True,
+                     label = 'deriv('+c.identifier+')',
+                     xlabel = None, fileName = c.fileName)
+        addCurveToPlot(cnew) # will add new curve identifier for us
+
+    doPlot()
+    
+#-----------------------------------------------
+def do_div(line=None):
+    # print(f'{line=}')
+    if line is None: 
+        print('div: takes 2 curve args, divides them.  Example - "div a b "')
+        return
+    doAopB('/', line)
+#-----------------------------------------------
+def do_dx(line=None):
+    #('') print(f'{line=}')
+    if line is None: 
+        print('dx: shifts x of curves.  Example - "dx a b c 23.3"')
+        return
+    line_args = line.split()
+    dFactor = float(line_args[-1])
+    for cid in line_args[:-1]:
+        c = getCurveFromIdentifier(cid)
+        c.x = dFactor+c.x
+    doPlot()
+#-----------------------------------------------
+def do_dy(line=None):
+    # print(f'{line=}')
+    if line is None: 
+        print('dy: shifts y of curves.  Example - "dy a b c 32.2"')
+        return
+    line_args = line.split()
+    dFactor = float(line_args[-1])
+    for cid in line_args[:-1]:
+        c = getCurveFromIdentifier(cid)
+        c.y = dFactor+c.y
+    doPlot()
 #-----------------------------------------------
 def do_fill(line=None):
     if line is None: return
@@ -380,6 +456,38 @@ def do_hide(line=None):
         c.plot = False
     doPlot()
 #-----------------------------------------------
+def do_integrate(line=None):
+    '''return new curve that is the integral of the curve'''
+    if line is None: 
+        print('integrate: return the cumulative integral of a curve, no args except curve list')
+        return
+    line_args = line.split()
+    for cID in line_args:
+        c = getCurveFromIdentifier(cID) # argument
+        # y = np.integrate(c.y, c.x)  # actually do the operation here
+        #-------my own cumulative integrate cuz I can't find one in numpy----
+        N = len(c.x) - 1
+        dx = c.x[1:] - c.x[:-1]
+        x = np.zeros(N)
+        y = np.zeros(N)
+        y[0] = 0.5*(c.y[1] + c.y[0])*dx[0]
+        for i in range(1,N):
+            ybar = 0.5*(c.y[i+1] + c.y[i])
+            y[i] = y[i-1] + ybar*dx[i]
+            x[i] = c.x[i] + 0.5*dx[i]
+        y /= c.x[-1]
+        #-------end cumulative integrate------------------------------------- 
+        
+        cnew = Curve(name='integral('+c.identifier+')',
+                     x = x, y = y, plot = True,
+                     label = 'integral('+c.identifier+')',
+                     xlabel = None, fileName = c.fileName)
+        
+        addCurveToPlot(cnew) # will add new curve identifier for us
+
+    doPlot()
+    
+#-----------------------------------------------
 def do_key(line=None):
     if line is None: return
     # print('key ', line)
@@ -411,7 +519,66 @@ def do_labelfilenames(line=None):
         c.label = c.label + ': '+c.fileName
     doPlot()
 #-----------------------------------------------
-
+def do_ls(line=None):
+    # print(f'{line=}')
+    if line is None: 
+        print('ls: change linestyle of curves. e.g, "ls a c dashed"')
+        return
+    cids = line.split()[:-1]
+    style = line.split()[-1]
+    for cid in cids:
+        c = getCurveFromIdentifier(cid)
+        c.style = style # converted at plot time to legit matplotlib style
+    doPlot()
+#-----------------------------------------------
+def do_lw(line=None):
+    # print(f'{line=}')
+    if line is None: 
+        print('ls: change linewidth of curves. e.g, "lw a:c 3"')
+        return
+    cids = line.split()[:-1]
+    width = line.split()[-1]
+    for cid in cids:
+        c = getCurveFromIdentifier(cid)
+        c.width = width
+    doPlot()
+#-----------------------------------------------
+def do_makecolor(line=None):
+    if line is None: 
+        print('makecolor: make color of first curve the same as second curve,. e.g,\
+        "makecolor b f"')
+        return
+    print('line = ',line)
+    line_args = line.split()
+    # we must have an even number of target-source pairs
+    N = len(line_args)
+    if N %2 != 0 or N == 0:
+        print('makecolor: must have an even number of arg so targets match sources')
+        return
+    for targetID, sourceID in zip(line_args[0:N//2],line_args[N//2:]):
+        targetC = getCurveFromIdentifier(targetID)
+        sourceC = getCurveFromIdentifier(sourceID)
+        targetC.color = sourceC.color
+    doPlot()
+    
+#-----------------------------------------------
+def do_markersize(line=None):
+    if line is None: 
+        print('markersize: marker size is set for curves, e.g., "ms a c 20", 6 is default')
+        return
+    print('line = ',line)
+    cids = line.split()[:-1]
+    markersize = line.split()[-1]
+    for cid in cids:
+        c = getCurveFromIdentifier(cid)
+        c.markersize = int(markersize)
+    doPlot()
+    
+#-----------------------------------------------
+def do_ms(line=None):
+    do_markersize(line)
+    
+#-----------------------------------------------
 def do_menu(line=None):
     outList = []
     print(f'menu: {line=}')
@@ -467,6 +634,18 @@ def do_show(line=None):
         c.plot = True
     doPlot()
 #-----------------------------------------------
+def do_title(line=None):
+    print(f'title {line=}')
+    p.title = line
+    doPlot()
+
+#-----------------------------------------------
+def do_xlabel(line=None):
+    # print(f'xlabel {line=}')
+    p.xlabel = line
+    doPlot()
+
+#-----------------------------------------------
 def do_xls(line=None):
     if line is not None:
         line = line.strip()
@@ -494,21 +673,9 @@ def do_yls(line=None):
     doPlot()
 #-----------------------------------------------
 
-def do_xlabel(line=None):
-    # print(f'xlabel {line=}')
-    p.xlabel = line
-    doPlot()
-#-----------------------------------------------
-
 def do_ylabel(line=None):
     # print(f'ylabel {line=}')
     p.ylabel = line
-    doPlot()
-#-----------------------------------------------
-
-def do_title(line=None):
-    print(f'title {line=}')
-    p.title = line
     doPlot()
 #-----------------------------------------------
 def getCurveFromIdentifier(curveIdentifier):
@@ -529,29 +696,6 @@ def addCurveToPlot(c):
         raise RuntimeError('tried to plot too many curves, out of identifiers')
     c.identifier = cid
     
-#-----------------------------------------------
-
-def do_cur(line=None):
-    # print(f'{line=}')
-    if line is None: 
-        print('cur: add curves to plot. e.g, "cur a c "')
-        return
-    line = line.strip()
-    # if the 1st arg is 'menu', then process the menu command
-    # and feed its result into 'do_cur'
-    if line.split()[0] == 'menu':
-        line = do_menu(line.split()[1])
-    else:
-        pass #otherwish just use the line of args as normal
-    for w in line.split():
-        # print(f'{w=}')
-        c = copy.deepcopy(curves[int(w)])
-        addCurveToPlot(c)
-    doPlot()
-#-----------------------------------------------
-# alias for cur
-def do_c(line=None):
-    do_cur(line)
 #-----------------------------------------------
 
 def do_mcur(line=None):
@@ -606,63 +750,6 @@ def do_color(line=None):
     for cid in cids:
         c = getCurveFromIdentifier(cid)
         c.color = color
-    doPlot()
-#-----------------------------------------------
-def do_ls(line=None):
-    # print(f'{line=}')
-    if line is None: 
-        print('ls: change linestyle of curves. e.g, "ls a c dashed"')
-        return
-    cids = line.split()[:-1]
-    style = line.split()[-1]
-    for cid in cids:
-        c = getCurveFromIdentifier(cid)
-        c.style = style # converted at plot time to legit matplotlib style
-    doPlot()
-#-----------------------------------------------
-def do_lw(line=None):
-    # print(f'{line=}')
-    if line is None: 
-        print('ls: change linewidth of curves. e.g, "lw a:c 3"')
-        return
-    cids = line.split()[:-1]
-    width = line.split()[-1]
-    for cid in cids:
-        c = getCurveFromIdentifier(cid)
-        c.width = width
-    doPlot()
-#-----------------------------------------------
-def do_markersize(line=None):
-    if line is None: 
-        print('markersize: marker size is set for curves, e.g., "ms a c 20", 6 is default')
-        return
-    print('line = ',line)
-    cids = line.split()[:-1]
-    markersize = line.split()[-1]
-    for cid in cids:
-        c = getCurveFromIdentifier(cid)
-        c.markersize = int(markersize)
-    doPlot()
-#-----------------------------------------------
-def do_ms(line=None):
-    do_markersize(line)
-#-----------------------------------------------
-def do_makecolor(line=None):
-    if line is None: 
-        print('makecolor: make color of first curve the same as second curve,. e.g,\
-        "makecolor b f"')
-        return
-    print('line = ',line)
-    line_args = line.split()
-    # we must have an even number of target-source pairs
-    N = len(line_args)
-    if N %2 != 0 or N == 0:
-        print('makecolor: must have an even number of arg so targets match sources')
-        return
-    for targetID, sourceID in zip(line_args[0:N//2],line_args[N//2:]):
-        targetC = getCurveFromIdentifier(targetID)
-        sourceC = getCurveFromIdentifier(sourceID)
-        targetC.color = sourceC.color
     doPlot()
 #-----------------------------------------------
 def doAopB(op,line=None):
@@ -744,10 +831,6 @@ def do_cos(line=None):
     # print(f'{line=}')
     doFunctionOfCurve('cos', line)
 #-----------------------------------------------
-def do_add(line=None):
-    # print(f'{line=}')
-    doAopB('+', line)
-#-----------------------------------------------
 def do_sub(line=None):
     print(f'{line=}')
     doAopB('-', line)
@@ -756,35 +839,18 @@ def do_mul(line=None):
     # print(f'{line=}')
     doAopB('*', line)
 #-----------------------------------------------
-def do_div(line=None):
-    # print(f'{line=}')
-    if line is None: 
-        print('div: takes 2 curve args, divides them.  Example - "div a b "')
-        return
-    doAopB('/', line)
-#-----------------------------------------------
-def do_dx(line=None):
+def do_mdiv(line=None):
     #('') print(f'{line=}')
     if line is None: 
-        print('dx: shifts x of curves.  Example - "dx a b c 23.3"')
+        print('mdiv: divides curves by x.  Example - "mdiv a b c 1e-9"')
         return
     line_args = line.split()
-    dFactor = float(line_args[-1])
+    mFactor = float(line_args[-1])
+    if mFactor == 0.0:
+        print('mdiv: divides curves by x.  Example - "mdiv a b c 1e-9".  You have supplied x=zero, cannot divide by that.')
     for cid in line_args[:-1]:
         c = getCurveFromIdentifier(cid)
-        c.x = dFactor+c.x
-    doPlot()
-#-----------------------------------------------
-def do_dy(line=None):
-    # print(f'{line=}')
-    if line is None: 
-        print('dy: shifts y of curves.  Example - "dy a b c 32.2"')
-        return
-    line_args = line.split()
-    dFactor = float(line_args[-1])
-    for cid in line_args[:-1]:
-        c = getCurveFromIdentifier(cid)
-        c.y = dFactor+c.y
+        c.x = c.x/mFactor
     doPlot()
 #-----------------------------------------------
 def do_mx(line=None):
@@ -883,22 +949,6 @@ def do_xmin(line=None):
                      x = new_x, y = new_y, plot = True,
                      label = 'xmin('+c.identifier+')',
                      xlabel = None, fileName = None)
-        addCurveToPlot(cnew) # will add new curve identifier for us
-
-    doPlot()
-    
-#-----------------------------------------------
-
-def do_der(line=None):
-    '''return new curve that is derivative of the curve'''
-    line_args = line.split()
-    for cID in line_args:
-        c = getCurveFromIdentifier(cID) # argument
-        y = np.gradient(c.y, c.x)  # actually do the operation here
-        cnew = Curve(name='deriv('+c.identifier+')',
-                     x = c.x, y = y, plot = True,
-                     label = 'deriv('+c.identifier+')',
-                     xlabel = None, fileName = c.fileName)
         addCurveToPlot(cnew) # will add new curve identifier for us
 
     doPlot()

@@ -1,13 +1,14 @@
 NEEDED FEATURES LIST (this is always on top)
 
 [ ] Refactor: funcs that affect plot from funcs that affect curves, unary from binary, etc.
-[ ] integral
 [ ] xmax?  maybe don't need if integral takes a range.
 [ ] L2 norm
 [ ] fit command: 'fit a 1 logy xmin xmax'
 [ ] read .myvrc file for initialization settings
 [-] read commands from a file: sort of; a here-doc, 'myv << EOF' works
 [ ] allow 'cur 3, b.3, c.3', syntax
+[01/12/2026] mdiv command, divide curves by constant
+[01/12/2026] added integrate command, simplest zeroth order scheme
 [01/09/2026] added markersize command
 [06/05/2025] dx, dy, curve shift functions
 [03/31/2025] makecolor, copies colors from one curve range to another range
@@ -268,3 +269,4 @@ finally.  Functioning depends on the back-end, though.
 
 Need the 'dx' and 'dy' functions to shift curves up and down and side to side.
 Guess we forgot to put that in.  Doing today.
+
